@@ -7,7 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface OwnerRepository extends JpaRepository<Owner, UUID> {
-    boolean existsByEmail(String email);
 
     Optional<Owner> findByEmail(String email);
+
+
 }
