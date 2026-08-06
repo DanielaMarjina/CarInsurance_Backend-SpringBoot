@@ -9,7 +9,8 @@ import com.danielamarjina.carinsurance.repository.OwnerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,5 +28,28 @@ public class OwnerService {
         Owner owner=ownerRepository.findByEmail(email)
                 .orElseThrow(()->new OwnerNotFoundException(email));
         return ownerMapper.toResponse(owner);
+    }
+
+    public List<Owner> getAllOwners(){
+        return ownerRepository.findAll();
+    }
+
+    public OwnerResponse findOwnerById(UUID id){
+        Owner owner=ownerRepository.findById(id)
+                .orElseThrow(()->new OwnerNotFoundException(id));
+        return ownerMapper.toResponse(owner);
+    }
+
+    public OwnerResponse updateOwner(UUID id, OwnerRequest ownerRequest){
+        Owner owner=ownerRepository.findById(id)
+                .orElseThrow(()->new OwnerNotFoundException(id));
+        ownerMapper.updateEntity(ownerRequest,owner);
+        return ownerMapper.toResponse(ownerRepository.save(owner));
+    }
+
+    public void deleteOwner(UUID id){
+        Owner owner=ownerRepository.findById(id)
+                .orElseThrow(()->new OwnerNotFoundException(id));
+        ownerRepository.delete(owner);
     }
 }
