@@ -3,10 +3,14 @@ package com.danielamarjina.carinsurance.service;
 import com.danielamarjina.carinsurance.dto.request.OwnerRequest;
 import com.danielamarjina.carinsurance.dto.response.OwnerResponse;
 import com.danielamarjina.carinsurance.entity.Owner;
+import com.danielamarjina.carinsurance.exception.OwnerNotFoundException;
 import com.danielamarjina.carinsurance.mapper.OwnerMapper;
 import com.danielamarjina.carinsurance.repository.OwnerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,5 +22,34 @@ public class OwnerService {
         Owner owner=ownerMapper.toEntity(ownerRequest);
         Owner savedOwner=ownerRepository.save(owner);
         return ownerMapper.toResponse(savedOwner);
+    }
+
+    public OwnerResponse findOwnerByEmail(String email){
+        Owner owner=ownerRepository.findByEmail(email)
+                .orElseThrow(()->new OwnerNotFoundException(email));
+        return ownerMapper.toResponse(owner);
+    }
+
+    public List<Owner> getAllOwners(){
+        return ownerRepository.findAll();
+    }
+
+    public OwnerResponse findOwnerById(UUID id){
+        Owner owner=ownerRepository.findById(id)
+                .orElseThrow(()->new OwnerNotFoundException(id));
+        return ownerMapper.toResponse(owner);
+    }
+
+    public OwnerResponse updateOwner(UUID id, OwnerRequest ownerRequest){
+        Owner owner=ownerRepository.findById(id)
+                .orElseThrow(()->new OwnerNotFoundException(id));
+        ownerMapper.updateEntity(ownerRequest,owner);
+        return ownerMapper.toResponse(ownerRepository.save(owner));
+    }
+
+    public void deleteOwner(UUID id){
+        Owner owner=ownerRepository.findById(id)
+                .orElseThrow(()->new OwnerNotFoundException(id));
+        ownerRepository.delete(owner);
     }
 }
