@@ -12,17 +12,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OwnerRequest {
+public class OwnerPatchRequest {
 
-    @NotBlank
     @Size(max = 100)
     private String name;
 
-    @NotNull
     @Past
     private LocalDate birthdate;
 
-    @NotNull
     @Min(1900)
     private Integer yearOfDriverLicense;
 

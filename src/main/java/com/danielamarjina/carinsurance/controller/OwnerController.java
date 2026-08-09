@@ -1,8 +1,10 @@
 package com.danielamarjina.carinsurance.controller;
 
+import com.danielamarjina.carinsurance.dto.request.OwnerPatchRequest;
 import com.danielamarjina.carinsurance.dto.request.OwnerRequest;
 import com.danielamarjina.carinsurance.dto.response.OwnerResponse;
 import com.danielamarjina.carinsurance.entity.Owner;
+import com.danielamarjina.carinsurance.enums.DriverLicenseCategory;
 import com.danielamarjina.carinsurance.service.OwnerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,10 @@ public class OwnerController {
     private final OwnerService ownerService;
 
     @GetMapping
-    public List<Owner> getAllOwners(){
-        return ownerService.getAllOwners();
+    public List<Owner> getAllOwners(
+            @RequestParam (required = false)DriverLicenseCategory driverLicenseCategory
+            ){
+        return ownerService.getAllOwners(driverLicenseCategory);
     }
 
     @PostMapping
@@ -42,6 +46,11 @@ public class OwnerController {
     @PutMapping("/update")
     public OwnerResponse updateOwner(@RequestParam UUID id, @Valid @RequestBody OwnerRequest ownerRequest){
         return ownerService.updateOwner(id,ownerRequest);
+    }
+
+    @PatchMapping("/id")
+    public OwnerResponse patchOwner(@RequestParam UUID id, @Valid @RequestBody OwnerPatchRequest ownerPatchRequest){
+        return ownerService.patchOwner(id,ownerPatchRequest);
     }
 
     @DeleteMapping("/{id}")
