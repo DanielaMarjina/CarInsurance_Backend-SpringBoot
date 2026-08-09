@@ -1,8 +1,10 @@
 package com.danielamarjina.carinsurance.service;
 
+import com.danielamarjina.carinsurance.dto.request.OwnerPatchRequest;
 import com.danielamarjina.carinsurance.dto.request.OwnerRequest;
 import com.danielamarjina.carinsurance.dto.response.OwnerResponse;
 import com.danielamarjina.carinsurance.entity.Owner;
+import com.danielamarjina.carinsurance.enums.DriverLicenseCategory;
 import com.danielamarjina.carinsurance.exception.OwnerNotFoundException;
 import com.danielamarjina.carinsurance.mapper.OwnerMapper;
 import com.danielamarjina.carinsurance.repository.OwnerRepository;
@@ -30,8 +32,10 @@ public class OwnerService {
         return ownerMapper.toResponse(owner);
     }
 
-    public List<Owner> getAllOwners(){
-        return ownerRepository.findAll();
+    public List<Owner> getAllOwners(DriverLicenseCategory category){
+        if(category==null)
+            return ownerRepository.findAll();
+        return ownerRepository.findByDriverLicenseCategory(category);
     }
 
     public OwnerResponse findOwnerById(UUID id){
@@ -44,6 +48,13 @@ public class OwnerService {
         Owner owner=ownerRepository.findById(id)
                 .orElseThrow(()->new OwnerNotFoundException(id));
         ownerMapper.updateEntity(ownerRequest,owner);
+        return ownerMapper.toResponse(ownerRepository.save(owner));
+    }
+
+    public OwnerResponse patchOwner(UUID id, OwnerPatchRequest ownerPatchRequest){
+        Owner owner=ownerRepository.findById(id)
+                .orElseThrow(()->new OwnerNotFoundException(id));
+        ownerMapper.patchEntity(ownerPatchRequest,owner);
         return ownerMapper.toResponse(ownerRepository.save(owner));
     }
 
