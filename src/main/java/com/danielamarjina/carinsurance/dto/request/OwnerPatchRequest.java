@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Builder
 public class OwnerPatchRequest implements OwnerValidationData{
 
-    @Size(max = 100)
+    @Size(max = 100, message = "Name cannot exceed 100 characters")
     @Pattern(
             regexp = "^[\\p{L}]+([ '-][\\p{L}]+)*$",
             message = "Name can contain only letters, spaces, hyphens and apostrophes."
@@ -25,13 +25,13 @@ public class OwnerPatchRequest implements OwnerValidationData{
     @Past
     private LocalDate birthdate;
 
-    @Min(1900)
+    @Min(value = 1900, message = "Year of driver license must be after 1900")
     private Integer yearOfDriverLicense;
 
     private DriverLicenseCategory driverLicenseCategory;
 
-    @Email
-    @Size(max = 150)
+    @Email(message = "Please enter a valid email")
+    @Size(max = 150, message = "Email cannot exceed 150 characters")
     private String email;
 
 }
