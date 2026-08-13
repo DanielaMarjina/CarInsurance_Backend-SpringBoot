@@ -28,7 +28,7 @@ public class CarResponse {
 
     private Integer power;
 
-    private OwnerSummaryResponse ownerSummaryResponse;
+    private OwnerSummaryResponse owner;
 
 }
 
