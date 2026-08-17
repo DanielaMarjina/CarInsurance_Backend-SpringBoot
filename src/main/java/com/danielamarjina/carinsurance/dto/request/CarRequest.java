@@ -31,15 +31,15 @@ public class CarRequest {
     private String model;
 
     @NotNull(message = "Year of manufacture is required")
-    @Min(value = 1900, message = "Year of manufacture must be after 1900")
+    @Min(value = 1900, message = "Year of manufacture must be 1900 or later")
     private Integer yearOfManufacture;
 
     private CarCategory category;
 
-    @Min(value = 1)
+    @Min(value = 1, message = "Engine displacement must be greater than 0")
     private Integer cc;
 
-    @Min(value = 1)
+    @Min(value = 1, message = "Power must be greater than 0")
     private Integer power;
 
     @NotNull(message = "Owner ID is required")

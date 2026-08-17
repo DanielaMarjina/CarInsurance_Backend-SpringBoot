@@ -40,8 +40,8 @@ public class Car {
     @Column()
     private Integer power;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
 }
