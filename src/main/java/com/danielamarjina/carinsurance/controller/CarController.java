@@ -1,14 +1,14 @@
 package com.danielamarjina.carinsurance.controller;
 
+import com.danielamarjina.carinsurance.dto.request.CarRequest;
 import com.danielamarjina.carinsurance.dto.response.CarResponse;
 import com.danielamarjina.carinsurance.entity.Car;
 import com.danielamarjina.carinsurance.enums.CarCategory;
 import com.danielamarjina.carinsurance.service.CarService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,4 +27,24 @@ public class CarController {
     ){
         return carService.getAllCars(make, model, category, ownerId);
     }
+
+    @PostMapping
+    public CarResponse createCar(
+            @Valid @RequestBody CarRequest request){
+        return carService.createCar(request);
+    }
+
+    @GetMapping("/{id}")
+    public CarResponse getCar(@PathVariable UUID id)
+    {
+        return carService.getCarById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCar(@PathVariable UUID id){
+        carService.deleteCar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
