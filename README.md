@@ -43,7 +43,7 @@ The project follows a layered architecture with separate responsibilities for:
 
 ## Development Status
 
-The project is currently under development. The owner management module has been implemented, including its DTOs, validation, mapping, service and repository layers, exception handling, and REST endpoints.
+The project is currently under development. The owner and car management module has been implemented, including its DTOs, validation, mapping, service and repository layers, exception handling, and REST endpoints.
 
 The remaining modules will progressively recreate the functionality of the original FastAPI application.
 
