@@ -2,7 +2,6 @@ package com.danielamarjina.carinsurance.controller;
 
 import com.danielamarjina.carinsurance.dto.request.CarRequest;
 import com.danielamarjina.carinsurance.dto.response.CarResponse;
-import com.danielamarjina.carinsurance.entity.Car;
 import com.danielamarjina.carinsurance.enums.CarCategory;
 import com.danielamarjina.carinsurance.service.CarService;
 import jakarta.validation.Valid;
