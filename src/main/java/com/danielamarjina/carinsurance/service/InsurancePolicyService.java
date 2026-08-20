@@ -12,7 +12,9 @@ import com.danielamarjina.carinsurance.exception.InsurancePolicyNotFoundExceptio
 import com.danielamarjina.carinsurance.mapper.InsurancePolicyMapper;
 import com.danielamarjina.carinsurance.repository.CarRepository;
 import com.danielamarjina.carinsurance.repository.InsurancePolicyRepository;
+import com.danielamarjina.carinsurance.specification.InsurancePolicySpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,8 +28,16 @@ public class InsurancePolicyService {
     private final InsurancePolicyMapper insurancePolicyMapper;
     private final CarRepository carRepository;
 
-    public List<InsurancePolicyResponse> getAllPolicies(){
-        return insurancePolicyRepository.findAll()
+    public List<InsurancePolicyResponse> getAllPolicies(String provider, InsurancePolicyStatus status){
+        Specification<InsurancePolicy> specification=(root, query, criteriaBuilder) -> null;
+
+        if(provider!=null)
+            specification=specification.and(InsurancePolicySpecification.hasProvider(provider));
+
+        if(status!=null)
+            specification=specification.and(InsurancePolicySpecification.hasStatus(status));
+
+        return insurancePolicyRepository.findAll(specification)
                 .stream()
                 .map(insurancePolicyMapper::toResponse)
                 .toList();

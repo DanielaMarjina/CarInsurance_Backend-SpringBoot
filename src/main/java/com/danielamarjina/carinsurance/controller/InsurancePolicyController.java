@@ -3,6 +3,7 @@ package com.danielamarjina.carinsurance.controller;
 import com.danielamarjina.carinsurance.dto.request.InsurancePolicyRequest;
 import com.danielamarjina.carinsurance.dto.response.InsurancePolicyIsValidResponse;
 import com.danielamarjina.carinsurance.dto.response.InsurancePolicyResponse;
+import com.danielamarjina.carinsurance.enums.InsurancePolicyStatus;
 import com.danielamarjina.carinsurance.service.InsurancePolicyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,11 @@ public class InsurancePolicyController {
     private final InsurancePolicyService service;
 
     @GetMapping("/policies")
-    public List<InsurancePolicyResponse> getAllPolicies(){
-        return service.getAllPolicies();
+    public List<InsurancePolicyResponse> getAllPolicies(
+            @RequestParam(required = false) String provider,
+            @RequestParam(required = false) InsurancePolicyStatus status
+            ){
+        return service.getAllPolicies(provider,status);
     }
 
     @PostMapping("/cars/{carId}/policies")
