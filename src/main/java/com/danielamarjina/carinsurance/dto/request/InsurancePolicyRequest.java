@@ -17,6 +17,10 @@ public class InsurancePolicyRequest {
 
     @NotBlank(message = "Provider is required")
     @Size(max = 100, message = "Provider cannot exceed 100 characters")
+    @Pattern(
+            regexp = "^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$",
+            message = "Provider must contain only letters and numbers separated by single spaces"
+    )
     private String provider;
 
     @PastOrPresent(message = "Start date cannot be in the future")
