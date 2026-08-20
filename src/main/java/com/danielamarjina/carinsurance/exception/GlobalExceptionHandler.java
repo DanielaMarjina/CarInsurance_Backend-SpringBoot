@@ -36,6 +36,30 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(InsurancePolicyNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleInsurancePolicyNotFound(InsurancePolicyNotFoundException exception){
+        ErrorResponse errorResponse=ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .error("Insurance Policy not found")
+                .message(exception.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ActivePolicyNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleActivePolicyNotFound(ActivePolicyNotFoundException exception){
+        ErrorResponse errorResponse=ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .error("Active Insurance Policy not found")
+                .message(exception.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException exception){
         String message=exception.getBindingResult()
