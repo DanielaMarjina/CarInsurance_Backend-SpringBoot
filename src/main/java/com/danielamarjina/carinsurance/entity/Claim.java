@@ -34,7 +34,12 @@ public class Claim {
     @Column(nullable = false)
     private BigDecimal amount;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate(){
+        createdAt=LocalDateTime.now();
+    }
 
 }

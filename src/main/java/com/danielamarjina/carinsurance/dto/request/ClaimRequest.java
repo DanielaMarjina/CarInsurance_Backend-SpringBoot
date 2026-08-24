@@ -17,6 +17,7 @@ public class ClaimRequest {
     private LocalDate claimDate;
 
     @NotBlank(message = "Description is required")
+    @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
 
     @NotNull(message = "Amount is required")
