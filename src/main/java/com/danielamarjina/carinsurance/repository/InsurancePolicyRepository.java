@@ -18,5 +18,7 @@ public interface InsurancePolicyRepository extends JpaRepository<InsurancePolicy
 
     Optional<InsurancePolicy> findByCar(Car car);
 
+    List<InsurancePolicy> findByCarId(UUID carId);
+
     Optional<InsurancePolicy> findByCarAndStatus(Car car,InsurancePolicyStatus status);
 }
