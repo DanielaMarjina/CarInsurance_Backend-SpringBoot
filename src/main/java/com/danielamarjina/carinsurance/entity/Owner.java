@@ -2,7 +2,6 @@ package com.danielamarjina.carinsurance.entity;
 
 import com.danielamarjina.carinsurance.enums.DriverLicenseCategory;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
