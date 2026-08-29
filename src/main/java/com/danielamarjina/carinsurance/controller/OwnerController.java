@@ -6,6 +6,7 @@ import com.danielamarjina.carinsurance.dto.response.OwnerResponse;
 import com.danielamarjina.carinsurance.entity.Owner;
 import com.danielamarjina.carinsurance.enums.DriverLicenseCategory;
 import com.danielamarjina.carinsurance.service.OwnerService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/owners")
 @RequiredArgsConstructor
 public class OwnerController {

@@ -5,6 +5,7 @@ import com.danielamarjina.carinsurance.dto.response.InsurancePolicyIsValidRespon
 import com.danielamarjina.carinsurance.dto.response.InsurancePolicyResponse;
 import com.danielamarjina.carinsurance.enums.InsurancePolicyStatus;
 import com.danielamarjina.carinsurance.service.InsurancePolicyService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("")
 @RequiredArgsConstructor
 public class InsurancePolicyController {

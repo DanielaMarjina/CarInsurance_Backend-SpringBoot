@@ -4,6 +4,7 @@ import com.danielamarjina.carinsurance.dto.request.CarRequest;
 import com.danielamarjina.carinsurance.dto.response.CarResponse;
 import com.danielamarjina.carinsurance.enums.CarCategory;
 import com.danielamarjina.carinsurance.service.CarService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/cars")
 @RequiredArgsConstructor
 public class CarController {
