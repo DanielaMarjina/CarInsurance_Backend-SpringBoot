@@ -1,6 +1,8 @@
 package com.danielamarjina.carinsurance.controller;
 
+import com.danielamarjina.carinsurance.dto.request.LoginRequest;
 import com.danielamarjina.carinsurance.dto.request.RegisterRequest;
+import com.danielamarjina.carinsurance.dto.response.LoginResponse;
 import com.danielamarjina.carinsurance.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,5 +19,10 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@Valid @RequestBody RegisterRequest request){
         authService.register(request);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest){
+        return authService.login(loginRequest);
     }
 }
