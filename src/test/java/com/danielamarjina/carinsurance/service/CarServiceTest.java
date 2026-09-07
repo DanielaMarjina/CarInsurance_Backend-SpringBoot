@@ -4,6 +4,7 @@ import com.danielamarjina.carinsurance.dto.request.CarRequest;
 import com.danielamarjina.carinsurance.dto.response.CarResponse;
 import com.danielamarjina.carinsurance.entity.Car;
 import com.danielamarjina.carinsurance.entity.Owner;
+import com.danielamarjina.carinsurance.enums.CarCategory;
 import com.danielamarjina.carinsurance.exception.CarNotFoundException;
 import com.danielamarjina.carinsurance.exception.OwnerNotFoundException;
 import com.danielamarjina.carinsurance.mapper.CarMapper;
@@ -14,11 +15,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -120,5 +124,163 @@ class CarServiceTest {
         assertThrows(CarNotFoundException.class,
                 ()->carService.deleteCar(id));
         verify(carRepository).findById(id);
+    }
+
+    @Test
+    void getAllCars_shouldReturnAllCars_whenNoFiltersAreProvided(){
+        Car car1=new Car();
+        Car car2=new Car();
+        List<Car> cars= List.of(
+                car1,
+                car2
+        );
+        CarResponse carResponse1=new CarResponse();
+        CarResponse carResponse2=new CarResponse();
+
+        when(carRepository.findAll(any(Specification.class)))
+                .thenReturn(cars);
+        when(carMapper.toResponse(car1))
+                .thenReturn(carResponse1);
+        when(carMapper.toResponse(car2))
+                .thenReturn(carResponse2);
+
+        List<CarResponse> result=carService.getAllCars(null,null,null,null);
+        assertEquals(List.of(carResponse1,carResponse2),result);
+        verify(carRepository).findAll(any(Specification.class));
+        verify(carMapper).toResponse(car1);
+        verify(carMapper).toResponse(car2);
+    }
+
+    @Test
+    void getAllCars_shouldReturnCarsFilteredByMake_whenMakeIsProvided(){
+        String make="BMW";
+        Car car1=new Car();
+        Car car2=new Car();
+        List<Car> cars= List.of(
+                car1,
+                car2
+        );
+        CarResponse carResponse1=new CarResponse();
+        CarResponse carResponse2=new CarResponse();
+
+        when(carRepository.findAll(any(Specification.class)))
+                .thenReturn(cars);
+        when(carMapper.toResponse(car1))
+                .thenReturn(carResponse1);
+        when(carMapper.toResponse(car2))
+                .thenReturn(carResponse2);
+
+        List<CarResponse> result=carService.getAllCars(make,null,null,null);
+        assertEquals(List.of(carResponse1,carResponse2),result);
+        verify(carRepository).findAll(any(Specification.class));
+        verify(carMapper).toResponse(car1);
+        verify(carMapper).toResponse(car2);
+    }
+
+    @Test
+    void getAllCars_shouldReturnCarsFilteredByModel_whenModelIsProvided(){
+        String model="X5";
+        Car car1=new Car();
+        Car car2=new Car();
+        List<Car> cars= List.of(
+                car1,
+                car2
+        );
+        CarResponse carResponse1=new CarResponse();
+        CarResponse carResponse2=new CarResponse();
+
+        when(carRepository.findAll(any(Specification.class)))
+                .thenReturn(cars);
+        when(carMapper.toResponse(car1))
+                .thenReturn(carResponse1);
+        when(carMapper.toResponse(car2))
+                .thenReturn(carResponse2);
+
+        List<CarResponse> result=carService.getAllCars(null,model,null,null);
+        assertEquals(List.of(carResponse1,carResponse2),result);
+        verify(carRepository).findAll(any(Specification.class));
+        verify(carMapper).toResponse(car1);
+        verify(carMapper).toResponse(car2);
+    }
+
+    @Test
+    void getAllCars_shouldReturnCarsFilteredByCategory_whenCategoryIsProvided(){
+        CarCategory category=CarCategory.ELECTRIC;
+        Car car1=new Car();
+        Car car2=new Car();
+        List<Car> cars= List.of(
+                car1,
+                car2
+        );
+        CarResponse carResponse1=new CarResponse();
+        CarResponse carResponse2=new CarResponse();
+
+        when(carRepository.findAll(any(Specification.class)))
+                .thenReturn(cars);
+        when(carMapper.toResponse(car1))
+                .thenReturn(carResponse1);
+        when(carMapper.toResponse(car2))
+                .thenReturn(carResponse2);
+
+        List<CarResponse> result=carService.getAllCars(null,null,category,null);
+        assertEquals(List.of(carResponse1,carResponse2),result);
+        verify(carRepository).findAll(any(Specification.class));
+        verify(carMapper).toResponse(car1);
+        verify(carMapper).toResponse(car2);
+    }
+
+    @Test
+    void getAllCars_shouldReturnCarsFilteredByOwnerId_whenOwnerIdIsProvided(){
+        UUID ownerId=UUID.randomUUID();
+        Car car1=new Car();
+        Car car2=new Car();
+        List<Car> cars= List.of(
+                car1,
+                car2
+        );
+        CarResponse carResponse1=new CarResponse();
+        CarResponse carResponse2=new CarResponse();
+
+        when(carRepository.findAll(any(Specification.class)))
+                .thenReturn(cars);
+        when(carMapper.toResponse(car1))
+                .thenReturn(carResponse1);
+        when(carMapper.toResponse(car2))
+                .thenReturn(carResponse2);
+
+        List<CarResponse> result=carService.getAllCars(null,null,null,ownerId);
+        assertEquals(List.of(carResponse1,carResponse2),result);
+        verify(carRepository).findAll(any(Specification.class));
+        verify(carMapper).toResponse(car1);
+        verify(carMapper).toResponse(car2);
+    }
+
+    @Test
+    void getAllCars_shouldReturnCarsFilteredByAllParameters_whenAllParametersAreProvided(){
+        String make="BMW";
+        String model="X5";
+        CarCategory category=CarCategory.ELECTRIC;
+        UUID ownerId=UUID.randomUUID();
+        Car car1=new Car();
+        Car car2=new Car();
+        List<Car> cars= List.of(
+                car1,
+                car2
+        );
+        CarResponse carResponse1=new CarResponse();
+        CarResponse carResponse2=new CarResponse();
+
+        when(carRepository.findAll(any(Specification.class)))
+                .thenReturn(cars);
+        when(carMapper.toResponse(car1))
+                .thenReturn(carResponse1);
+        when(carMapper.toResponse(car2))
+                .thenReturn(carResponse2);
+
+        List<CarResponse> result=carService.getAllCars(make,model,category,ownerId);
+        assertEquals(List.of(carResponse1,carResponse2),result);
+        verify(carRepository).findAll(any(Specification.class));
+        verify(carMapper).toResponse(car1);
+        verify(carMapper).toResponse(car2);
     }
 }
