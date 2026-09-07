@@ -8,6 +8,7 @@ import com.danielamarjina.carinsurance.service.InsurancePolicyService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public class InsurancePolicyController {
     private final InsurancePolicyService service;
 
     @GetMapping("/policies")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
     public List<InsurancePolicyResponse> getAllPolicies(
             @RequestParam(required = false) String provider,
             @RequestParam(required = false) InsurancePolicyStatus status
@@ -30,18 +32,21 @@ public class InsurancePolicyController {
     }
 
     @PostMapping("/cars/{carId}/policies")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
     public InsurancePolicyResponse createPolicy(@PathVariable UUID carId,
                                                 @Valid @RequestBody InsurancePolicyRequest request){
         return service.createPolicy(carId,request);
     }
 
     @GetMapping("/cars/{carId}/insurance-valid")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
     public InsurancePolicyIsValidResponse getValidityPolicy(@PathVariable UUID carId,
                                                             @Valid LocalDate date){
         return service.getValidityPolicy(carId,date);
     }
 
     @GetMapping("/policies/active-policy")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
     public InsurancePolicyResponse getActivePolicy(@Valid UUID carId){
         return service.getActivePolicy(carId);
     }
