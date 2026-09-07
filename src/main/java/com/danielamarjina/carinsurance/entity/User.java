@@ -1,5 +1,6 @@
 package com.danielamarjina.carinsurance.entity;
 
+import com.danielamarjina.carinsurance.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,5 +27,9 @@ public class User {
 
     @Column(nullable = false, length = 100)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
 }

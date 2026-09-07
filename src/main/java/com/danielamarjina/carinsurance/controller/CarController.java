@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class CarController {
     private final CarService carService;
     @GetMapping
+    @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
     public List<CarResponse> getAllCars(
             @RequestParam(required = false) String make,
             @RequestParam(required = false) String model,
@@ -30,18 +32,21 @@ public class CarController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
     public CarResponse createCar(
             @Valid @RequestBody CarRequest request){
         return carService.createCar(request);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
     public CarResponse getCar(@PathVariable UUID id)
     {
         return carService.getCarById(id);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCar(@PathVariable UUID id){
         carService.deleteCar(id);
         return ResponseEntity.noContent().build();
