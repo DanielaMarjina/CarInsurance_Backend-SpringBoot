@@ -4,6 +4,7 @@ import com.danielamarjina.carinsurance.dto.request.CarRequest;
 import com.danielamarjina.carinsurance.dto.response.CarResponse;
 import com.danielamarjina.carinsurance.entity.Car;
 import com.danielamarjina.carinsurance.entity.Owner;
+import com.danielamarjina.carinsurance.exception.CarNotFoundException;
 import com.danielamarjina.carinsurance.exception.OwnerNotFoundException;
 import com.danielamarjina.carinsurance.mapper.CarMapper;
 import com.danielamarjina.carinsurance.repository.CarRepository;
@@ -71,5 +72,53 @@ class CarServiceTest {
         assertThrows(OwnerNotFoundException.class,
                 ()->carService.createCar(carRequest));
         verify(ownerRepository).findById(ownerId);
+    }
+
+    @Test
+    void getCarById_shouldGetCar_whenCarExists(){
+        UUID id=UUID.randomUUID();
+        Car car=new Car();
+        CarResponse carResponse=new CarResponse();
+        when(carRepository.findById(id))
+                .thenReturn(Optional.of(car));
+        when(carMapper.toResponse(car))
+                .thenReturn(carResponse);
+        CarResponse result=carService.getCarById(id);
+        assertEquals(carResponse,result);
+        verify(carRepository).findById(id);
+        verify(carMapper).toResponse(car);
+    }
+
+    @Test
+    void getCarById_shouldThrowException_whenCarDoesNotExist(){
+        UUID id=UUID.randomUUID();
+        when(carRepository.findById(id))
+                .thenReturn(Optional.empty());
+        assertThrows(CarNotFoundException.class,
+                ()->carService.getCarById(id));
+        verify(carRepository).findById(id);
+    }
+
+    @Test
+    void deleteCar_shouldDeleteCar_whenCarExists(){
+        UUID id = UUID.randomUUID();
+        Car car=new Car();
+        when(carRepository.findById(id))
+                .thenReturn(Optional.of(car));
+        carService.deleteCar(id);
+
+        verify(carRepository).findById(id);
+        verify(carRepository).delete(car);
+
+    }
+
+    @Test
+    void deleteCar_shouldThrowException_whenCarDoesNotExist(){
+        UUID id = UUID.randomUUID();
+        when(carRepository.findById(id))
+                .thenReturn(Optional.empty());
+        assertThrows(CarNotFoundException.class,
+                ()->carService.deleteCar(id));
+        verify(carRepository).findById(id);
     }
 }
