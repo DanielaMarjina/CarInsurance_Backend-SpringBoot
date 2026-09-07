@@ -24,8 +24,10 @@ The project is being rebuilt in Java to deepen my understanding of Spring Boot a
 * User registration and login
 * Password hashing with BCrypt
 * JWT-based authentication
+* Role-based authorization
 * Spring Security integration
 * Swagger/OpenAPI documentation with JWT authentication support
+* Unit testing with JUnit and Mockito
 
 ## Technologies
 
@@ -39,6 +41,8 @@ The project is being rebuilt in Java to deepen my understanding of Spring Boot a
 * MapStruct
 * Jakarta Validation
 * JWT
+* JUnit
+* Mockito
 * Swagger/OpenAPI
 * Maven
 * Git
@@ -56,7 +60,7 @@ The project follows a layered architecture with separate responsibilities for:
 * **Specifications** - implement dynamic filtering and querying
 * **Exceptions** - handle application-specific errors
 * **Enums** - represent domain-specific states and types
-* **Security** - handle authentication and JWT validation
+* **Security** - handle authentication, JWT validation and authorization
 
 ## Implemented Modules
 
@@ -99,58 +103,64 @@ The following modules have been implemented:
   * Sorts history entries chronologically
   * Validates that the requested car exists
 
-* **Authentication**
+* **Authentication & Authorization**
 
   * User registration
   * User login
   * BCrypt password hashing
   * JWT generation and validation
   * JWT authentication filter
-  * Protected API endpoints using Spring Security
+  * Role-based access control
+  * Role-based endpoint authorization using Spring Security
 
 ## Development Status
 
 The core functionality for owners, cars, insurance policies, claims and car history has been implemented.
 
-**User authentication using Spring Security, BCrypt and JWT has also been implemented.**
+**Authentication and authorization using Spring Security, BCrypt, JWT and role-based access control have also been implemented.**
 
-The project is currently being extended with additional production-style backend features.
+The project is currently being extended with automated testing and additional production-style backend features.
+
+### Current Focus
+
+**Automated Testing**
+
+* Unit tests with JUnit and Mockito
+* Testing service-layer business logic
+* Testing successful and exceptional execution paths
+* Verifying interactions with repositories and mappers
+* Controller tests for REST endpoints
+* Integration tests for database and API behavior
 
 ### Next Steps
 
-The next stage of development will focus on:
+1. **Complete Automated Testing**
 
-1. **Authorization**
+   * Finish unit tests for all service classes
+   * Add controller tests using `@WebMvcTest` and `MockMvc`
+   * Add integration tests for REST endpoints and database interactions
+   * Increase overall test coverage
 
-   * Role-based access control
-   * User roles and permissions
-   * Restricting specific operations based on user roles
-
-2. **Automated Testing**
-
-   * Unit tests with JUnit and Mockito
-   * Integration tests for REST endpoints
-   * Tests for core business functionality such as car history, claims and insurance validity
-
-3. **Business Rules**
+2. **Business Rules**
 
    * Prevent overlapping insurance policies for the same car
    * Validate policy date ranges
+   * Add additional domain-specific validations
 
-4. **Background Processing**
+3. **Background Processing**
 
    * Scheduled detection of expired insurance policies
    * Expiry logging while preventing duplicate logs
 
-5. **Additional Improvements**
+4. **Additional Improvements**
 
    * Request ID / correlation ID
    * Improved application logging
-   * Additional test coverage
    * Further security improvements
+   * Additional production-oriented refinements
 
 ## Purpose
 
 This project is a hands-on migration/reimplementation exercise designed to strengthen my **Java and Spring Boot backend development skills** by recreating an application previously built with FastAPI.
 
-The goal is not only to reproduce the existing functionality, but also to progressively introduce common backend practices such as **authentication, authorization, automated testing, business-rule validation and scheduled background processing**.
+The goal is not only to reproduce the existing functionality, but also to progressively introduce common backend practices such as **authentication, authorization, automated testing, business-rule validation, database integration and scheduled background processing**.
