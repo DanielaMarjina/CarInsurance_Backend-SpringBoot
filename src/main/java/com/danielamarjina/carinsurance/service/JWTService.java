@@ -1,5 +1,6 @@
 package com.danielamarjina.carinsurance.service;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,12 +50,17 @@ public class JWTService {
 
     public boolean isTokenExpired(String token){
         SecretKey key=Keys.hmacShaKeyFor(secretKey.getBytes());
-        Date date=Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration();
-        return date.before(new Date());
+        try {
+            Date date=Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration();
+            return date.before(new Date());
+
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
     }
 }
