@@ -28,8 +28,18 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 @WebMvcTest(OwnerController.class)
+@Import(OwnerControllerTest.MethodSecurityTestConfig.class)
 class OwnerControllerTest {
+
+    @TestConfiguration
+    @EnableMethodSecurity
+    static class MethodSecurityTestConfig {
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -186,5 +196,17 @@ class OwnerControllerTest {
                         .with(csrf()))
                 .andExpect(status().isNoContent());
         verify(ownerService).deleteOwner(id);
+    }
+
+    @Test
+    @WithMockUser(roles = "EMPLOYEE")
+    void deleteOwner_shouldNotDeleteOwner() throws Exception {
+        UUID id = UUID.randomUUID();
+
+        mockMvc.perform(delete("/owners/{id}", id)
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
+
+        verify(ownerService, never()).deleteOwner(id);
     }
 }
