@@ -41,13 +41,13 @@ public class InsurancePolicyController {
     @GetMapping("/cars/{carId}/insurance-valid")
     @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
     public InsurancePolicyIsValidResponse getValidityPolicy(@PathVariable UUID carId,
-                                                            @Valid @RequestParam LocalDate date){
+                                                            @RequestParam LocalDate date){
         return service.getValidityPolicy(carId,date);
     }
 
     @GetMapping("/policies/active-policy")
     @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
-    public InsurancePolicyResponse getActivePolicy(@Valid @RequestParam UUID carId){
+    public InsurancePolicyResponse getActivePolicy(@RequestParam UUID carId){
         return service.getActivePolicy(carId);
     }
 }
