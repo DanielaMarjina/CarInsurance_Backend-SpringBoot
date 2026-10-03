@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -92,8 +93,7 @@ class JWTAuthenticationFilterTest {
         assertNotNull(authentication);
         assertEquals("john@test.com", authentication.getName());
         assertTrue(authentication.getAuthorities().stream().
-                anyMatch(authority -> authority.getAuthority()
-                        .equals("ROLE_EMPLOYEE")));
+                anyMatch(authority -> Objects.equals(authority.getAuthority(), "ROLE_EMPLOYEE")));
         verify(filterChain).doFilter(mockHttpServletRequest,mockHttpServletResponse);
     }
 
