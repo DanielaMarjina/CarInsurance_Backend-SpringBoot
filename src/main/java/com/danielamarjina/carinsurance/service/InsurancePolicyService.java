@@ -13,8 +13,10 @@ import com.danielamarjina.carinsurance.mapper.InsurancePolicyMapper;
 import com.danielamarjina.carinsurance.repository.CarRepository;
 import com.danielamarjina.carinsurance.repository.InsurancePolicyRepository;
 import com.danielamarjina.carinsurance.specification.InsurancePolicySpecification;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,14 +30,14 @@ public class InsurancePolicyService {
     private final InsurancePolicyMapper insurancePolicyMapper;
     private final CarRepository carRepository;
 
-    public List<InsurancePolicyResponse> getAllPolicies(String provider, InsurancePolicyStatus status){
-        Specification<InsurancePolicy> specification=(root, query, criteriaBuilder) -> null;
+    public List<InsurancePolicyResponse> getAllPolicies(String provider, InsurancePolicyStatus status) {
+        Specification<InsurancePolicy> specification = (root, query, criteriaBuilder) -> null;
 
-        if(provider!=null)
-            specification=specification.and(InsurancePolicySpecification.hasProvider(provider));
+        if (provider != null)
+            specification = specification.and(InsurancePolicySpecification.hasProvider(provider));
 
-        if(status!=null)
-            specification=specification.and(InsurancePolicySpecification.hasStatus(status));
+        if (status != null)
+            specification = specification.and(InsurancePolicySpecification.hasStatus(status));
 
         return insurancePolicyRepository.findAll(specification)
                 .stream()
@@ -43,26 +45,25 @@ public class InsurancePolicyService {
                 .toList();
     }
 
-    public InsurancePolicyResponse createPolicy(UUID carId, InsurancePolicyRequest request){
-        Car car=carRepository.findById(carId)
-                .orElseThrow(()->new CarNotFoundException(carId));
-        InsurancePolicy insurancePolicy=insurancePolicyMapper.toEntity(request);
+    public InsurancePolicyResponse createPolicy(UUID carId, InsurancePolicyRequest request) {
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new CarNotFoundException(carId));
+        InsurancePolicy insurancePolicy = insurancePolicyMapper.toEntity(request);
         insurancePolicy.setCar(car);
-        if(request.getEndDate().isAfter(LocalDate.now())){
+        if (request.getEndDate().isAfter(LocalDate.now()) || request.getEndDate().isEqual(LocalDate.now())) {
             insurancePolicy.setStatus(InsurancePolicyStatus.ACTIVE);
-        }
-        else{
+        } else {
             insurancePolicy.setStatus(InsurancePolicyStatus.EXPIRED);
         }
-        InsurancePolicy savedPolicy=insurancePolicyRepository.save(insurancePolicy);
+        InsurancePolicy savedPolicy = insurancePolicyRepository.save(insurancePolicy);
         return insurancePolicyMapper.toResponse(savedPolicy);
     }
 
-    public InsurancePolicyIsValidResponse getValidityPolicy(UUID carId, LocalDate date){
-        Car car=carRepository.findById(carId)
-                .orElseThrow(()->new CarNotFoundException(carId));
-        InsurancePolicy insurancePolicy=insurancePolicyRepository.findByCar(car)
-                .orElseThrow(()->new InsurancePolicyNotFoundException(carId));
+    public InsurancePolicyIsValidResponse getValidityPolicy(UUID carId, LocalDate date) {
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new CarNotFoundException(carId));
+        InsurancePolicy insurancePolicy = insurancePolicyRepository.findByCar(car)
+                .orElseThrow(() -> new InsurancePolicyNotFoundException(carId));
         boolean valid =
                 !date.isBefore(insurancePolicy.getStartDate())
                         && !date.isAfter(insurancePolicy.getEndDate());
@@ -74,11 +75,23 @@ public class InsurancePolicyService {
                 .build();
     }
 
-    public InsurancePolicyResponse getActivePolicy(UUID carId){
-        Car car=carRepository.findById(carId)
-                .orElseThrow(()->new CarNotFoundException(carId));
-        InsurancePolicy activePolicy=insurancePolicyRepository.findByCarAndStatus(car,InsurancePolicyStatus.ACTIVE)
-                .orElseThrow(()->new ActivePolicyNotFoundException(carId));
+    public InsurancePolicyResponse getActivePolicy(UUID carId) {
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new CarNotFoundException(carId));
+        InsurancePolicy activePolicy = insurancePolicyRepository.findByCarAndStatus(car, InsurancePolicyStatus.ACTIVE)
+                .orElseThrow(() -> new ActivePolicyNotFoundException(carId));
         return insurancePolicyMapper.toResponse(activePolicy);
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * *")
+    public void updatePolicyStatus() {
+        LocalDate today = LocalDate.now();
+        List<InsurancePolicy> policies = insurancePolicyRepository.
+                findByStatusAndEndDateBefore(InsurancePolicyStatus.ACTIVE, today);
+        System.out.println("Policies expired: "+ policies.size());
+        for(InsurancePolicy policy : policies){
+            policy.setStatus(InsurancePolicyStatus.EXPIRED);
+        }
     }
 }
