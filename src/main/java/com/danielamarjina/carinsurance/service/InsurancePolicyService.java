@@ -48,6 +48,8 @@ public class InsurancePolicyService {
     public InsurancePolicyResponse createPolicy(UUID carId, InsurancePolicyRequest request) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new CarNotFoundException(carId));
+        if(insurancePolicyRepository.existsByCarAndStatus(car,InsurancePolicyStatus.ACTIVE))
+            throw new RuntimeException("Car already has an active policy!");
         InsurancePolicy insurancePolicy = insurancePolicyMapper.toEntity(request);
         insurancePolicy.setCar(car);
         if (request.getEndDate().isAfter(LocalDate.now()) || request.getEndDate().isEqual(LocalDate.now())) {
