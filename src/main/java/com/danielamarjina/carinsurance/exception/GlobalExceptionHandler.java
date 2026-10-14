@@ -60,8 +60,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    @ExceptionHandler(CarAlreadyHasAnActivePolicyException.class)
-    public ResponseEntity<ErrorResponse> handleCarAlreadyHasAnActivePolicy(CarAlreadyHasAnActivePolicyException exception){
+    @ExceptionHandler(OverlappingInsurancePolicyException.class)
+    public ResponseEntity<ErrorResponse> handleCarAlreadyHasAnActivePolicy(OverlappingInsurancePolicyException exception){
         ErrorResponse errorResponse=ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST.value())

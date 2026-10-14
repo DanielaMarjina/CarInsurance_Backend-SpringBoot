@@ -7,9 +7,9 @@ import com.danielamarjina.carinsurance.entity.Car;
 import com.danielamarjina.carinsurance.entity.InsurancePolicy;
 import com.danielamarjina.carinsurance.enums.InsurancePolicyStatus;
 import com.danielamarjina.carinsurance.exception.ActivePolicyNotFoundException;
-import com.danielamarjina.carinsurance.exception.CarAlreadyHasAnActivePolicyException;
 import com.danielamarjina.carinsurance.exception.CarNotFoundException;
 import com.danielamarjina.carinsurance.exception.InsurancePolicyNotFoundException;
+import com.danielamarjina.carinsurance.exception.OverlappingInsurancePolicyException;
 import com.danielamarjina.carinsurance.mapper.InsurancePolicyMapper;
 import com.danielamarjina.carinsurance.repository.CarRepository;
 import com.danielamarjina.carinsurance.repository.InsurancePolicyRepository;
@@ -49,8 +49,13 @@ public class InsurancePolicyService {
     public InsurancePolicyResponse createPolicy(UUID carId, InsurancePolicyRequest request) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new CarNotFoundException(carId));
-        if(insurancePolicyRepository.existsByCarAndStatus(car,InsurancePolicyStatus.ACTIVE))
-            throw new CarAlreadyHasAnActivePolicyException(carId);
+        if (insurancePolicyRepository
+                .existsByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                        car,
+                        request.getEndDate(),
+                        request.getStartDate())) {
+            throw new OverlappingInsurancePolicyException(carId);
+        }
         InsurancePolicy insurancePolicy = insurancePolicyMapper.toEntity(request);
         insurancePolicy.setCar(car);
         if (request.getEndDate().isAfter(LocalDate.now()) || request.getEndDate().isEqual(LocalDate.now())) {
