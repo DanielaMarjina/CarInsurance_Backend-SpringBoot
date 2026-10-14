@@ -30,4 +30,6 @@ public interface InsurancePolicyRepository extends JpaRepository<InsurancePolicy
     );
 
     List<InsurancePolicy> findByStatusAndEndDateBefore(InsurancePolicyStatus status, LocalDate date);
+
+    List<InsurancePolicy> findByStatusAndStartDate(InsurancePolicyStatus status, LocalDate date);
 }

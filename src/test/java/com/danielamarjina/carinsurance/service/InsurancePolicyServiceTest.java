@@ -47,6 +47,7 @@ class InsurancePolicyServiceTest {
     void createPolicy_shouldCreatePolicy_whenCarExistsAndEndDateIsInTheFuture(){
         UUID carId= UUID.randomUUID();
         InsurancePolicyRequest insurancePolicyRequest=new InsurancePolicyRequest();
+        insurancePolicyRequest.setStartDate(LocalDate.now());
         insurancePolicyRequest.setEndDate(LocalDate.now().plusDays(30));
         Car car=new Car();
         InsurancePolicy insurancePolicy=new InsurancePolicy();
