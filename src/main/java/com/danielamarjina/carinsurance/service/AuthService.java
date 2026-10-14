@@ -24,11 +24,9 @@ public class AuthService {
 
     public void register(RegisterRequest request){
         if(userRepository.existsByUsername(request.getUsername()))
-            throw new UserAlreadyExistsException(String.format("User with '%s' username already exists",
-                    request.getUsername()));
+            throw new UserAlreadyExistsException(request.getUsername());
         if(userRepository.existsByEmail(request.getEmail()))
-            throw new UserAlreadyExistsException(String.format("User with '%s' email already exists",
-                    request.getEmail()));
+            throw new UserAlreadyExistsException(request.getEmail());
         User user=userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);

@@ -7,6 +7,7 @@ import com.danielamarjina.carinsurance.entity.Car;
 import com.danielamarjina.carinsurance.entity.InsurancePolicy;
 import com.danielamarjina.carinsurance.enums.InsurancePolicyStatus;
 import com.danielamarjina.carinsurance.exception.ActivePolicyNotFoundException;
+import com.danielamarjina.carinsurance.exception.CarAlreadyHasAnActivePolicyException;
 import com.danielamarjina.carinsurance.exception.CarNotFoundException;
 import com.danielamarjina.carinsurance.exception.InsurancePolicyNotFoundException;
 import com.danielamarjina.carinsurance.mapper.InsurancePolicyMapper;
@@ -49,7 +50,7 @@ public class InsurancePolicyService {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new CarNotFoundException(carId));
         if(insurancePolicyRepository.existsByCarAndStatus(car,InsurancePolicyStatus.ACTIVE))
-            throw new RuntimeException("Car already has an active policy!");
+            throw new CarAlreadyHasAnActivePolicyException(carId);
         InsurancePolicy insurancePolicy = insurancePolicyMapper.toEntity(request);
         insurancePolicy.setCar(car);
         if (request.getEndDate().isAfter(LocalDate.now()) || request.getEndDate().isEqual(LocalDate.now())) {
