@@ -9,6 +9,7 @@ import com.danielamarjina.carinsurance.enums.InsurancePolicyStatus;
 import com.danielamarjina.carinsurance.exception.ActivePolicyNotFoundException;
 import com.danielamarjina.carinsurance.exception.CarNotFoundException;
 import com.danielamarjina.carinsurance.exception.InsurancePolicyNotFoundException;
+import com.danielamarjina.carinsurance.exception.OverlappingInsurancePolicyException;
 import com.danielamarjina.carinsurance.mapper.InsurancePolicyMapper;
 import com.danielamarjina.carinsurance.repository.CarRepository;
 import com.danielamarjina.carinsurance.repository.InsurancePolicyRepository;
@@ -111,6 +112,21 @@ class InsurancePolicyServiceTest {
         assertThrows(CarNotFoundException.class,
                 ()->insurancePolicyService.createPolicy(carId,insurancePolicyRequest));
         verify(carRepository).findById(carId);
+    }
+
+    @Test
+    void createPolicy_shouldThrowException_whenOverlappingPolicies(){
+        UUID carId=UUID.randomUUID();
+        Car car=new Car();
+        InsurancePolicyRequest request=new InsurancePolicyRequest();
+        request.setStartDate(LocalDate.now().plusDays(10));
+        request.setEndDate(LocalDate.now().plusDays(30));
+        when(carRepository.findById(carId)).thenReturn(Optional.of(car));
+        when(insurancePolicyRepository.existsByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                car,request.getEndDate(),request.getStartDate()
+        )).thenReturn(true);
+        assertThrows(OverlappingInsurancePolicyException.class,
+                ()->insurancePolicyService.createPolicy(carId,request));
     }
 
     @Test
