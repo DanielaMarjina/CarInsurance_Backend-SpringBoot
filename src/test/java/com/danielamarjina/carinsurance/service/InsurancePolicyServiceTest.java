@@ -250,7 +250,8 @@ class InsurancePolicyServiceTest {
         when(carRepository.findById(carId))
                 .thenReturn(Optional.of(car));
 
-        when(insurancePolicyRepository.findByCar(car))
+        when(insurancePolicyRepository
+                .findByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(car,date,date))
                 .thenReturn(Optional.of(policy));
 
         InsurancePolicyIsValidResponse result =
@@ -261,7 +262,7 @@ class InsurancePolicyServiceTest {
         assertTrue(result.getValid());
 
         verify(carRepository).findById(carId);
-        verify(insurancePolicyRepository).findByCar(car);
+        verify(insurancePolicyRepository).findByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(car,date,date);
     }
 
     @Test
@@ -281,7 +282,8 @@ class InsurancePolicyServiceTest {
         when(carRepository.findById(carId))
                 .thenReturn(Optional.of(car));
 
-        when(insurancePolicyRepository.findByCar(car))
+        when(insurancePolicyRepository
+                .findByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(car,date,date))
                 .thenReturn(Optional.of(policy));
 
         InsurancePolicyIsValidResponse result =
@@ -292,7 +294,7 @@ class InsurancePolicyServiceTest {
         assertFalse(result.getValid());
 
         verify(carRepository).findById(carId);
-        verify(insurancePolicyRepository).findByCar(car);
+        verify(insurancePolicyRepository).findByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(car,date,date);
     }
 
     @Test
@@ -321,7 +323,8 @@ class InsurancePolicyServiceTest {
         when(carRepository.findById(carId))
                 .thenReturn(Optional.of(car));
 
-        when(insurancePolicyRepository.findByCar(car))
+        when(insurancePolicyRepository
+                .findByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(car,date,date))
                 .thenReturn(Optional.empty());
 
         assertThrows(
@@ -330,7 +333,7 @@ class InsurancePolicyServiceTest {
         );
 
         verify(carRepository).findById(carId);
-        verify(insurancePolicyRepository).findByCar(car);
+        verify(insurancePolicyRepository).findByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(car,date,date);
     }
 
     @Test

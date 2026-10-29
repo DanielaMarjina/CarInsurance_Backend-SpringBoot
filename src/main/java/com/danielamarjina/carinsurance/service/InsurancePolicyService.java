@@ -74,7 +74,8 @@ public class InsurancePolicyService {
     public InsurancePolicyIsValidResponse getValidityPolicy(UUID carId, LocalDate date) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new CarNotFoundException(carId));
-        InsurancePolicy insurancePolicy = insurancePolicyRepository.findByCar(car)
+        InsurancePolicy insurancePolicy = insurancePolicyRepository
+                .findByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(car,date,date)
                 .orElseThrow(() -> new InsurancePolicyNotFoundException(carId));
         boolean valid =
                 !date.isBefore(insurancePolicy.getStartDate())
