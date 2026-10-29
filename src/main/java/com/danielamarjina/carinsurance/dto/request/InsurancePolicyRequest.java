@@ -23,7 +23,6 @@ public class InsurancePolicyRequest {
     )
     private String provider;
 
-    @PastOrPresent(message = "Start date cannot be in the future")
     @NotNull(message = "Start Date is required")
     private LocalDate startDate;
 

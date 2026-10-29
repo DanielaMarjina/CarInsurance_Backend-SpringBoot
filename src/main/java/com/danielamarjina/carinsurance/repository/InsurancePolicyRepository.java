@@ -23,5 +23,17 @@ public interface InsurancePolicyRepository extends JpaRepository<InsurancePolicy
 
     Optional<InsurancePolicy> findByCarAndStatus(Car car,InsurancePolicyStatus status);
 
+    boolean existsByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            Car car,
+            LocalDate newEndDate,
+            LocalDate newStartDate
+    );
+
     List<InsurancePolicy> findByStatusAndEndDateBefore(InsurancePolicyStatus status, LocalDate date);
+
+    List<InsurancePolicy> findByStatusAndStartDate(InsurancePolicyStatus status, LocalDate date);
+
+    Optional<InsurancePolicy> findByCarAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            Car car, LocalDate startDate, LocalDate endDate
+    );
 }
