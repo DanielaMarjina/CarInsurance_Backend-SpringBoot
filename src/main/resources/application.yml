@@ -22,3 +22,8 @@ jwt:
 
 server:
   port: 8080
+
+logging:
+  level:
+    root: INFO
+    com.danielamarjina.carinsurance: DEBUG

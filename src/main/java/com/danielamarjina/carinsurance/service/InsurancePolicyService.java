@@ -16,6 +16,8 @@ import com.danielamarjina.carinsurance.repository.InsurancePolicyRepository;
 import com.danielamarjina.carinsurance.specification.InsurancePolicySpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class InsurancePolicyService {
     private final InsurancePolicyRepository insurancePolicyRepository;
     private final InsurancePolicyMapper insurancePolicyMapper;
     private final CarRepository carRepository;
+    private static final Logger log= LoggerFactory.getLogger(InsurancePolicyService.class);
 
     public List<InsurancePolicyResponse> getAllPolicies(String provider, InsurancePolicyStatus status) {
         Specification<InsurancePolicy> specification = (root, query, criteriaBuilder) -> null;
@@ -68,6 +71,7 @@ public class InsurancePolicyService {
             insurancePolicy.setStatus(InsurancePolicyStatus.ACTIVE);
         }
         InsurancePolicy savedPolicy = insurancePolicyRepository.save(insurancePolicy);
+        log.info("Insurance policy created successfully for car: {}", carId);
         return insurancePolicyMapper.toResponse(savedPolicy);
     }
 
@@ -102,13 +106,13 @@ public class InsurancePolicyService {
         LocalDate today = LocalDate.now();
         List<InsurancePolicy> expiredPolicies = insurancePolicyRepository.
                 findByStatusAndEndDateBefore(InsurancePolicyStatus.ACTIVE, today);
-        System.out.println("Policies expired: "+ expiredPolicies.size());
+        log.info("Policies expired: {}", expiredPolicies.size());
         for(InsurancePolicy policy : expiredPolicies){
             policy.setStatus(InsurancePolicyStatus.EXPIRED);
         }
         List<InsurancePolicy> nowActivePolicies=insurancePolicyRepository.
                 findByStatusAndStartDate(InsurancePolicyStatus.UPCOMING,today);
-        System.out.println("Policies now active: "+ nowActivePolicies.size());
+        log.info("Policies now active: {}", nowActivePolicies.size());
         for(InsurancePolicy policy : nowActivePolicies){
             policy.setStatus(InsurancePolicyStatus.ACTIVE);
         }
