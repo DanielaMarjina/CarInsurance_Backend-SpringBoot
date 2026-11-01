@@ -3,6 +3,8 @@ package com.danielamarjina.carinsurance.service;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import java.util.Date;
 public class JWTService {
     private final String secretKey;
     private final long expiration;
+    private static final Logger log= LoggerFactory.getLogger(JWTService.class);
 
     public JWTService(
             @Value("${jwt.secret}") String secretKey,
@@ -25,12 +28,14 @@ public class JWTService {
 
     public String generateToken(String email){
         SecretKey key= Keys.hmacShaKeyFor(secretKey.getBytes());
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis()+expiration))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)
                 .compact();
+        log.debug("JWT generated successfully for user: {}", email);
+        return token;
     }
 
     public String extractEmail(String token){
