@@ -9,6 +9,8 @@ import com.danielamarjina.carinsurance.exception.OwnerNotFoundException;
 import com.danielamarjina.carinsurance.mapper.OwnerMapper;
 import com.danielamarjina.carinsurance.repository.OwnerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,10 +34,13 @@ public class OwnerService {
         return ownerMapper.toResponse(owner);
     }
 
-    public List<Owner> getAllOwners(DriverLicenseCategory category){
+    public Page<OwnerResponse> getAllOwners(DriverLicenseCategory category, Pageable pageable){
+        Page<Owner> owners;
         if(category==null)
-            return ownerRepository.findAll();
-        return ownerRepository.findByDriverLicenseCategory(category);
+            owners=ownerRepository.findAll(pageable);
+        else
+            owners=ownerRepository.findByDriverLicenseCategory(category,pageable);
+        return owners.map(ownerMapper::toResponse);
     }
 
     public OwnerResponse findOwnerById(UUID id){
