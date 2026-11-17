@@ -13,10 +13,11 @@ import com.danielamarjina.carinsurance.repository.OwnerRepository;
 import com.danielamarjina.carinsurance.specification.CarSpecification;
 import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -35,7 +36,7 @@ public class CarService {
         return carMapper.toResponse(savedCar);
     }
 
-    public List<CarResponse> getAllCars(String make, String model, CarCategory category, UUID ownerId) {
+    public Page<CarResponse> getAllCars(String make, String model, CarCategory category, UUID ownerId, Pageable pageable) {
         Specification<Car> specification = (root, query, criteriaBuilder) -> null;
 
         if (make != null) {
@@ -52,14 +53,14 @@ public class CarService {
         }
 
         specification = specification.and((root, query, criteriaBuilder) -> {
-            root.fetch("owner", JoinType.INNER);
+            if(query.getResultType()!=Long.class){
+                root.fetch("owner", JoinType.INNER);
+            }
             return null;
         });
 
-        return carRepository.findAll(specification)
-                .stream()
-                .map(carMapper::toResponse)
-                .toList();
+        return carRepository.findAll(specification, pageable)
+                .map(carMapper::toResponse);
 
     }
 

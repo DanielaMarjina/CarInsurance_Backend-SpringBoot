@@ -5,10 +5,14 @@ import com.danielamarjina.carinsurance.enums.CarHistoryType;
 import com.danielamarjina.carinsurance.service.CarHistoryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,8 +24,12 @@ public class CarHistoryController {
 
     @GetMapping("/cars/{carId}/history")
     @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
-    public List<CarHistoryResponse> getCarHistory(@PathVariable UUID carId,
-                                                  @RequestParam(required = false)CarHistoryType type){
-        return service.getCarHistory(carId,type);
+    public Page<CarHistoryResponse> getCarHistory(@PathVariable UUID carId,
+                                                  @RequestParam(required = false) CarHistoryType type,
+                                                  @ParameterObject @PageableDefault(
+                                                          page = 0,
+                                                          size = 10
+                                                  ) Pageable pageable) {
+        return service.getCarHistory(carId, type,pageable);
     }
 }
