@@ -9,6 +9,8 @@ import com.danielamarjina.carinsurance.mapper.ClaimMapper;
 import com.danielamarjina.carinsurance.repository.CarRepository;
 import com.danielamarjina.carinsurance.repository.ClaimRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,11 +23,9 @@ public class ClaimService {
     private final ClaimRepository claimRepository;
     private final CarRepository carRepository;
 
-    public List<ClaimResponse> getAllClaims(){
-        return claimRepository.findAll()
-                .stream()
-                .map(claimMapper::toResponse)
-                .toList();
+    public Page<ClaimResponse> getAllClaims(Pageable pageable){
+        return claimRepository.findAll(pageable)
+                .map(claimMapper::toResponse);
     }
 
     public ClaimResponse createClaim(UUID carId, ClaimRequest request){
