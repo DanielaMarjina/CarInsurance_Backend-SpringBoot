@@ -8,6 +8,11 @@ import com.danielamarjina.carinsurance.service.InsurancePolicyService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,11 +29,17 @@ public class InsurancePolicyController {
 
     @GetMapping("/policies")
     @PreAuthorize("hasAnyRole('EMPLOYEE','ADMIN')")
-    public List<InsurancePolicyResponse> getAllPolicies(
+    public Page<InsurancePolicyResponse> getAllPolicies(
             @RequestParam(required = false) String provider,
-            @RequestParam(required = false) InsurancePolicyStatus status
+            @RequestParam(required = false) InsurancePolicyStatus status,
+            @ParameterObject @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "status",
+                    direction = Sort.Direction.ASC
+            ) Pageable pageable
             ){
-        return service.getAllPolicies(provider,status);
+        return service.getAllPolicies(provider,status,pageable);
     }
 
     @PostMapping("/cars/{carId}/policies")

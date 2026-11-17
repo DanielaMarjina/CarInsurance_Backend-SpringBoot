@@ -18,6 +18,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,7 @@ public class InsurancePolicyService {
     private final CarRepository carRepository;
     private static final Logger log= LoggerFactory.getLogger(InsurancePolicyService.class);
 
-    public List<InsurancePolicyResponse> getAllPolicies(String provider, InsurancePolicyStatus status) {
+    public Page<InsurancePolicyResponse> getAllPolicies(String provider, InsurancePolicyStatus status, Pageable pageable) {
         Specification<InsurancePolicy> specification = (root, query, criteriaBuilder) -> null;
 
         if (provider != null)
@@ -43,10 +45,8 @@ public class InsurancePolicyService {
         if (status != null)
             specification = specification.and(InsurancePolicySpecification.hasStatus(status));
 
-        return insurancePolicyRepository.findAll(specification)
-                .stream()
-                .map(insurancePolicyMapper::toResponse)
-                .toList();
+        return insurancePolicyRepository.findAll(specification,pageable)
+                .map(insurancePolicyMapper::toResponse);
     }
 
     public InsurancePolicyResponse createPolicy(UUID carId, InsurancePolicyRequest request) {
