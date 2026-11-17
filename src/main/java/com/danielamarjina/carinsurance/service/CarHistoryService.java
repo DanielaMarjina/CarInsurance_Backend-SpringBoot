@@ -11,6 +11,9 @@ import com.danielamarjina.carinsurance.repository.CarRepository;
 import com.danielamarjina.carinsurance.repository.ClaimRepository;
 import com.danielamarjina.carinsurance.repository.InsurancePolicyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,7 +28,7 @@ public class CarHistoryService {
     private final ClaimRepository claimRepository;
     private final CarRepository carRepository;
 
-    public List<CarHistoryResponse> getCarHistory(UUID carId, CarHistoryType type){
+    public Page<CarHistoryResponse> getCarHistory(UUID carId, CarHistoryType type, Pageable pageable){
 
         if (!carRepository.existsById(carId)) {
             throw new CarNotFoundException(carId);
@@ -80,6 +83,12 @@ public class CarHistoryService {
                 Comparator.nullsLast(Comparator.reverseOrder())
         ));
 
-        return carHistoryList;
+        int start= Math.toIntExact(pageable.getOffset());
+        int end=Math.min(start+pageable.getPageSize(),carHistoryList.size());
+
+        List<CarHistoryResponse> pageContent=
+                start>=carHistoryList.size() ? List.of() : carHistoryList.subList(start,end);
+
+        return new PageImpl<>(pageContent,pageable,carHistoryList.size());
     }
 }
