@@ -16,7 +16,9 @@ public class OwnerResponse {
 
     private UUID id;
 
-    private String name;
+    private String firstName;
+
+    private String lastName;
 
     private LocalDate birthdate;
 

@@ -2,6 +2,7 @@ package com.danielamarjina.carinsurance.dto.request;
 
 import com.danielamarjina.carinsurance.enums.DriverLicenseCategory;
 import com.danielamarjina.carinsurance.validation.ValidOwner;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -15,13 +16,27 @@ import java.time.LocalDate;
 @Builder
 public class OwnerRequest implements OwnerValidationData{
 
-    @NotBlank(message = "Name is required")
-    @Size(max = 100, message = "Name cannot exceed 100 characters")
+    @NotBlank(message = "First Name is required")
+    @Size(max = 100, message = "First Name cannot exceed 100 characters")
     @Pattern(
             regexp = "^[\\p{L}]+([ '-][\\p{L}]+)*$",
-            message = "Name can contain only letters, spaces, hyphens and apostrophes"
+            message = "First Name can contain only letters, spaces, hyphens and apostrophes"
     )
-    private String name;
+    @Schema(
+            example = "John"
+    )
+    private String firstName;
+
+    @NotBlank(message = "Last Name is required")
+    @Size(max = 100, message = "Last Name cannot exceed 100 characters")
+    @Pattern(
+            regexp = "^[\\p{L}]+([ '-][\\p{L}]+)*$",
+            message = "Last Name can contain only letters, spaces, hyphens and apostrophes"
+    )
+    @Schema(
+            example = "Johnson"
+    )
+    private String lastName;
 
     @NotNull(message = "Birthdate is required")
     @Past
@@ -35,6 +50,9 @@ public class OwnerRequest implements OwnerValidationData{
 
     @Email(message = "Please enter a valid email")
     @Size(max = 150, message = "Email cannot exceed 150 characters")
+    @Schema(
+            example = "owner@example.com"
+    )
     private String email;
 
 }
