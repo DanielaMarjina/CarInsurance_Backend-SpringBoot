@@ -1,6 +1,7 @@
 package com.danielamarjina.carinsurance.dto.request;
 
 import com.danielamarjina.carinsurance.validation.ValidInsurancePolicy;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -20,6 +21,9 @@ public class InsurancePolicyRequest {
     @Pattern(
             regexp = "^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$",
             message = "Provider must contain only letters and numbers separated by single spaces"
+    )
+    @Schema(
+            example = "X Company"
     )
     private String provider;
 

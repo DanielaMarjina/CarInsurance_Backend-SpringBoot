@@ -63,7 +63,7 @@ public class OwnerValidator implements ConstraintValidator<ValidOwner, OwnerVali
             return false;
         }
 
-        if (licenseYear >= currentYear) {
+        if (licenseYear > currentYear) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(
                             "Driver's license year cannot be in the future."
@@ -85,6 +85,7 @@ public class OwnerValidator implements ConstraintValidator<ValidOwner, OwnerVali
             context.buildConstraintViolationWithTemplate("Owner must be at least 18 years old when obtaining the driver's license.")
                     .addPropertyNode("yearOfDriverLicense")
                     .addConstraintViolation();
+            return false;
         }
         return true;
     }
