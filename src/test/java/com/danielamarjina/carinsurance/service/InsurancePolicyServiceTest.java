@@ -15,6 +15,7 @@ import com.danielamarjina.carinsurance.repository.CarRepository;
 import com.danielamarjina.carinsurance.repository.InsurancePolicyRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,6 +32,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -146,7 +148,8 @@ class InsurancePolicyServiceTest {
         Pageable pageable= PageRequest.of(0,10);
         Page<InsurancePolicy> polciesPage=new PageImpl<>(policies,pageable,policies.size());
 
-        when(insurancePolicyRepository.findAll(any(Specification.class),pageable))
+        when(insurancePolicyRepository.findAll(ArgumentMatchers.<Specification<InsurancePolicy>>any(),
+                eq(pageable)))
                 .thenReturn(polciesPage);
         when(insurancePolicyMapper.toResponse(insurancePolicy1))
                 .thenReturn(insurancePolicyResponse1);
@@ -156,7 +159,8 @@ class InsurancePolicyServiceTest {
         Page<InsurancePolicyResponse> result=insurancePolicyService.getAllPolicies(null,null,pageable);
         assertEquals(List.of(insurancePolicyResponse1,insurancePolicyResponse2),result.getContent());
         assertEquals(2,result.getTotalElements());
-        verify(insurancePolicyRepository).findAll(any(Specification.class),pageable);
+        verify(insurancePolicyRepository).findAll(ArgumentMatchers.<Specification<InsurancePolicy>>any(),
+                eq(pageable));
         verify(insurancePolicyMapper).toResponse(insurancePolicy1);
         verify(insurancePolicyMapper).toResponse(insurancePolicy2);
     }
@@ -175,7 +179,8 @@ class InsurancePolicyServiceTest {
         Pageable pageable= PageRequest.of(0,10);
         Page<InsurancePolicy> polciesPage=new PageImpl<>(policies,pageable,policies.size());
 
-        when(insurancePolicyRepository.findAll(any(Specification.class),pageable))
+        when(insurancePolicyRepository.findAll(ArgumentMatchers.<Specification<InsurancePolicy>>any(),
+                eq(pageable)))
                 .thenReturn(polciesPage);
         when(insurancePolicyMapper.toResponse(insurancePolicy1))
                 .thenReturn(insurancePolicyResponse1);
@@ -185,7 +190,8 @@ class InsurancePolicyServiceTest {
         Page<InsurancePolicyResponse> result=insurancePolicyService.getAllPolicies(provider,null,pageable);
         assertEquals(List.of(insurancePolicyResponse1,insurancePolicyResponse2),result.getContent());
         assertEquals(2,result.getTotalElements());
-        verify(insurancePolicyRepository).findAll(any(Specification.class),pageable);
+        verify(insurancePolicyRepository).findAll(ArgumentMatchers.<Specification<InsurancePolicy>>any(),
+                eq(pageable));
         verify(insurancePolicyMapper).toResponse(insurancePolicy1);
         verify(insurancePolicyMapper).toResponse(insurancePolicy2);
     }
@@ -204,7 +210,8 @@ class InsurancePolicyServiceTest {
         Pageable pageable= PageRequest.of(0,10);
         Page<InsurancePolicy> polciesPage=new PageImpl<>(policies,pageable,policies.size());
 
-        when(insurancePolicyRepository.findAll(any(Specification.class),pageable))
+        when(insurancePolicyRepository.findAll(ArgumentMatchers.<Specification<InsurancePolicy>>any(),
+                eq(pageable)))
                 .thenReturn(polciesPage);
         when(insurancePolicyMapper.toResponse(insurancePolicy1))
                 .thenReturn(insurancePolicyResponse1);
@@ -214,7 +221,8 @@ class InsurancePolicyServiceTest {
         Page<InsurancePolicyResponse> result=insurancePolicyService.getAllPolicies(null,insurancePolicyStatus,pageable);
         assertEquals(List.of(insurancePolicyResponse1,insurancePolicyResponse2),result.getContent());
         assertEquals(2,result.getTotalElements());
-        verify(insurancePolicyRepository).findAll(any(Specification.class),pageable);
+        verify(insurancePolicyRepository).findAll(ArgumentMatchers.<Specification<InsurancePolicy>>any(),
+                eq(pageable));
         verify(insurancePolicyMapper).toResponse(insurancePolicy1);
         verify(insurancePolicyMapper).toResponse(insurancePolicy2);
     }
@@ -234,7 +242,8 @@ class InsurancePolicyServiceTest {
         Pageable pageable= PageRequest.of(0,10);
         Page<InsurancePolicy> polciesPage=new PageImpl<>(policies,pageable,policies.size());
 
-        when(insurancePolicyRepository.findAll(any(Specification.class),pageable))
+        when(insurancePolicyRepository.findAll(ArgumentMatchers.<Specification<InsurancePolicy>>any(),
+                eq(pageable)))
                 .thenReturn(polciesPage);
         when(insurancePolicyMapper.toResponse(insurancePolicy1))
                 .thenReturn(insurancePolicyResponse1);
@@ -244,7 +253,8 @@ class InsurancePolicyServiceTest {
         Page<InsurancePolicyResponse> result=insurancePolicyService.getAllPolicies(provider,insurancePolicyStatus,pageable);
         assertEquals(List.of(insurancePolicyResponse1,insurancePolicyResponse2),result.getContent());
         assertEquals(2,result.getTotalElements());
-        verify(insurancePolicyRepository).findAll(any(Specification.class),pageable);
+        verify(insurancePolicyRepository).findAll(ArgumentMatchers.<Specification<InsurancePolicy>>any(),
+                eq(pageable));
         verify(insurancePolicyMapper).toResponse(insurancePolicy1);
         verify(insurancePolicyMapper).toResponse(insurancePolicy2);
     }
