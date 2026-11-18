@@ -13,6 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,17 +46,17 @@ class ClaimServiceTest {
     void getAllClaims_shouldReturnAllClaims() {
         Claim claim1 = new Claim();
         Claim claim2 = new Claim();
-
+        Pageable pageable= PageRequest.of(0,10);
         List<Claim> claims= List.of(
                 claim1,
                 claim2
         );
-
+        Page<Claim> claimPage=new PageImpl<>(claims,pageable,claims.size());
         ClaimResponse claimResponse1 = new ClaimResponse();
         ClaimResponse claimResponse2 = new ClaimResponse();
 
-        when(claimRepository.findAll())
-                .thenReturn(claims);
+        when(claimRepository.findAll(pageable))
+                .thenReturn(claimPage);
 
         when(claimMapper.toResponse(claim1))
                 .thenReturn(claimResponse1);
@@ -60,14 +64,15 @@ class ClaimServiceTest {
         when(claimMapper.toResponse(claim2))
                 .thenReturn(claimResponse2);
 
-        List<ClaimResponse> result = claimService.getAllClaims();
+        Page<ClaimResponse> result = claimService.getAllClaims(pageable);
 
+        assertEquals(2, result.getTotalElements());
         assertEquals(
                 List.of(claimResponse1, claimResponse2),
-                result
+                result.getContent()
         );
 
-        verify(claimRepository).findAll();
+        verify(claimRepository).findAll(pageable);
         verify(claimMapper).toResponse(claim1);
         verify(claimMapper).toResponse(claim2);
     }

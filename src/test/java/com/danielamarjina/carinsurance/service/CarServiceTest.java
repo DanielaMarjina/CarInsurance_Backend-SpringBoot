@@ -15,6 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -136,17 +140,20 @@ class CarServiceTest {
         );
         CarResponse carResponse1=new CarResponse();
         CarResponse carResponse2=new CarResponse();
+        Pageable pageable= PageRequest.of(0,10);
+        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
 
-        when(carRepository.findAll(any(Specification.class)))
-                .thenReturn(cars);
+        when(carRepository.findAll(any(Specification.class),pageable))
+                .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        List<CarResponse> result=carService.getAllCars(null,null,null,null);
-        assertEquals(List.of(carResponse1,carResponse2),result);
-        verify(carRepository).findAll(any(Specification.class));
+        Page<CarResponse> result=carService.getAllCars(null,null,null,null,pageable);
+        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
+        assertEquals(2, result.getTotalElements());
+        verify(carRepository).findAll(any(Specification.class),pageable);
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
@@ -162,17 +169,20 @@ class CarServiceTest {
         );
         CarResponse carResponse1=new CarResponse();
         CarResponse carResponse2=new CarResponse();
+        Pageable pageable= PageRequest.of(0,10);
+        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
 
-        when(carRepository.findAll(any(Specification.class)))
-                .thenReturn(cars);
+        when(carRepository.findAll(any(Specification.class),pageable))
+                .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        List<CarResponse> result=carService.getAllCars(make,null,null,null);
-        assertEquals(List.of(carResponse1,carResponse2),result);
-        verify(carRepository).findAll(any(Specification.class));
+        Page<CarResponse> result=carService.getAllCars(make,null,null,null,pageable);
+        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
+        assertEquals(2,result.getTotalElements());
+        verify(carRepository).findAll(any(Specification.class),pageable);
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
@@ -188,17 +198,20 @@ class CarServiceTest {
         );
         CarResponse carResponse1=new CarResponse();
         CarResponse carResponse2=new CarResponse();
+        Pageable pageable= PageRequest.of(0,10);
+        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
 
-        when(carRepository.findAll(any(Specification.class)))
-                .thenReturn(cars);
+        when(carRepository.findAll(any(Specification.class),pageable))
+                .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        List<CarResponse> result=carService.getAllCars(null,model,null,null);
-        assertEquals(List.of(carResponse1,carResponse2),result);
-        verify(carRepository).findAll(any(Specification.class));
+        Page<CarResponse> result=carService.getAllCars(null,model,null,null,pageable);
+        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
+        assertEquals(2,result.getTotalElements());
+        verify(carRepository).findAll(any(Specification.class),pageable);
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
@@ -214,17 +227,20 @@ class CarServiceTest {
         );
         CarResponse carResponse1=new CarResponse();
         CarResponse carResponse2=new CarResponse();
+        Pageable pageable= PageRequest.of(0,10);
+        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
 
-        when(carRepository.findAll(any(Specification.class)))
-                .thenReturn(cars);
+        when(carRepository.findAll(any(Specification.class),pageable))
+                .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        List<CarResponse> result=carService.getAllCars(null,null,category,null);
-        assertEquals(List.of(carResponse1,carResponse2),result);
-        verify(carRepository).findAll(any(Specification.class));
+        Page<CarResponse> result=carService.getAllCars(null,null,category,null,pageable);
+        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
+        assertEquals(2,result.getTotalElements());
+        verify(carRepository).findAll(any(Specification.class),pageable);
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
@@ -240,17 +256,20 @@ class CarServiceTest {
         );
         CarResponse carResponse1=new CarResponse();
         CarResponse carResponse2=new CarResponse();
+        Pageable pageable= PageRequest.of(0,10);
+        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
 
-        when(carRepository.findAll(any(Specification.class)))
-                .thenReturn(cars);
+        when(carRepository.findAll(any(Specification.class),pageable))
+                .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        List<CarResponse> result=carService.getAllCars(null,null,null,ownerId);
-        assertEquals(List.of(carResponse1,carResponse2),result);
-        verify(carRepository).findAll(any(Specification.class));
+        Page<CarResponse> result=carService.getAllCars(null,null,null,ownerId,pageable);
+        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
+        assertEquals(2,result.getTotalElements());
+        verify(carRepository).findAll(any(Specification.class),pageable);
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
@@ -269,17 +288,20 @@ class CarServiceTest {
         );
         CarResponse carResponse1=new CarResponse();
         CarResponse carResponse2=new CarResponse();
+        Pageable pageable= PageRequest.of(0,10);
+        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
 
-        when(carRepository.findAll(any(Specification.class)))
-                .thenReturn(cars);
+        when(carRepository.findAll(any(Specification.class),pageable))
+                .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        List<CarResponse> result=carService.getAllCars(make,model,category,ownerId);
-        assertEquals(List.of(carResponse1,carResponse2),result);
-        verify(carRepository).findAll(any(Specification.class));
+        Page<CarResponse> result=carService.getAllCars(make,model,category,ownerId,pageable);
+        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
+        assertEquals(2,result.getTotalElements());
+        verify(carRepository).findAll(any(Specification.class),pageable);
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }

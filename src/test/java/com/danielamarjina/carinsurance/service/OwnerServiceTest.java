@@ -13,6 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -100,15 +104,26 @@ class OwnerServiceTest {
                 new Owner(),
                 new Owner()
         );
+        Pageable pageable= PageRequest.of(0,10);
+        Page<Owner> ownersPage=new PageImpl<>(owners,pageable,owners.size());
+        OwnerResponse response1 = new OwnerResponse();
+        OwnerResponse response2 = new OwnerResponse();
 
-        when(ownerRepository.findAll())
-                .thenReturn(owners);
+        when(ownerRepository.findAll(pageable))
+                .thenReturn(ownersPage);
 
-        List<Owner> result=ownerService.getAllOwners(null);
+        when(ownerMapper.toResponse(owners.get(0)))
+                .thenReturn(response1);
 
-        assertEquals(owners,result);
+        when(ownerMapper.toResponse(owners.get(1)))
+                .thenReturn(response2);
 
-        verify(ownerRepository).findAll();
+        Page<OwnerResponse> result=ownerService.getAllOwners(null,pageable);
+
+        assertEquals(2, result.getTotalElements());
+        assertEquals(List.of(response1, response2), result.getContent());
+
+        verify(ownerRepository).findAll(pageable);
     }
 
     @Test
@@ -118,15 +133,24 @@ class OwnerServiceTest {
                 new Owner(),
                 new Owner()
         );
+        Pageable pageable= PageRequest.of(0,10);
+        Page<Owner> ownersPage=new PageImpl<>(owners,pageable,owners.size());
+        OwnerResponse response1 = new OwnerResponse();
+        OwnerResponse response2 = new OwnerResponse();
 
-        when(ownerRepository.findByDriverLicenseCategory(category))
-                .thenReturn(owners);
+        when(ownerRepository.findByDriverLicenseCategory(category,pageable))
+                .thenReturn(ownersPage);
+        when(ownerMapper.toResponse(owners.get(0)))
+                .thenReturn(response1);
+        when(ownerMapper.toResponse(owners.get(1)))
+                .thenReturn(response2);
 
-        List<Owner> result=ownerService.getAllOwners(category);
+        Page<OwnerResponse> result=ownerService.getAllOwners(category,pageable);
 
-        assertEquals(owners,result);
+        assertEquals(2, result.getTotalElements());
+        assertEquals(List.of(response1, response2), result.getContent());
 
-        verify(ownerRepository).findByDriverLicenseCategory(category);
+        verify(ownerRepository).findByDriverLicenseCategory(category,pageable);
     }
 
     @Test
