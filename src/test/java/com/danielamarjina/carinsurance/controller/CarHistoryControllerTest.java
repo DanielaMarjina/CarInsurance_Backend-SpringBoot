@@ -1,7 +1,6 @@
 package com.danielamarjina.carinsurance.controller;
 
 import com.danielamarjina.carinsurance.dto.response.CarHistoryResponse;
-import com.danielamarjina.carinsurance.entity.Car;
 import com.danielamarjina.carinsurance.enums.CarHistoryType;
 import com.danielamarjina.carinsurance.service.CarHistoryService;
 import com.danielamarjina.carinsurance.service.CustomUserDetailsService;
@@ -11,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -59,15 +62,16 @@ class CarHistoryControllerTest {
                new CarHistoryResponse(),
                 new CarHistoryResponse()
         );
-
-        when(carHistoryService.getCarHistory(carId, null))
-                .thenReturn(history);
+        Pageable pageable= PageRequest.of(0,10);
+        Page<CarHistoryResponse> historyResponsePage=new PageImpl<>(history,pageable,history.size());
+        when(carHistoryService.getCarHistory(carId, null,pageable))
+                .thenReturn(historyResponsePage);
 
         mockMvc.perform(get("/cars/{carId}/history", carId))
                 .andExpect(status().isOk());
 
         verify(carHistoryService)
-                .getCarHistory(carId, null);
+                .getCarHistory(carId, null,pageable);
     }
 
 
@@ -83,15 +87,17 @@ class CarHistoryControllerTest {
                 new CarHistoryResponse()
         );
 
-        when(carHistoryService.getCarHistory(carId, type))
-                .thenReturn(history);
+        Pageable pageable= PageRequest.of(0,10);
+        Page<CarHistoryResponse> historyResponsePage=new PageImpl<>(history,pageable,history.size());
+        when(carHistoryService.getCarHistory(carId, type,pageable))
+                .thenReturn(historyResponsePage);
 
         mockMvc.perform(get("/cars/{carId}/history", carId)
                         .param("type", type.name()))
                 .andExpect(status().isOk());
 
         verify(carHistoryService)
-                .getCarHistory(carId, type);
+                .getCarHistory(carId, type,pageable);
     }
 
 
@@ -106,15 +112,16 @@ class CarHistoryControllerTest {
                 new CarHistoryResponse(),
                 new CarHistoryResponse()
         );
-
-        when(carHistoryService.getCarHistory(carId, type))
-                .thenReturn(history);
+        Pageable pageable= PageRequest.of(0,10);
+        Page<CarHistoryResponse> historyResponsePage=new PageImpl<>(history,pageable,history.size());
+        when(carHistoryService.getCarHistory(carId, type,pageable))
+                .thenReturn(historyResponsePage);
 
         mockMvc.perform(get("/cars/{carId}/history", carId)
                         .param("type", type.name()))
                 .andExpect(status().isOk());
 
         verify(carHistoryService)
-                .getCarHistory(carId, type);
+                .getCarHistory(carId, type,pageable);
     }
 }

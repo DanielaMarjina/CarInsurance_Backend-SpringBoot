@@ -9,6 +9,7 @@ import com.danielamarjina.carinsurance.service.JWTService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -62,11 +63,15 @@ class CarControllerTest {
                 new CarResponse(),
                 new CarResponse()
         );
-        when(carService.getAllCars(null, null, null, null))
-                .thenReturn(carResponses);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("make").ascending()
+        );
+        Page<CarResponse> carResponsePage=new PageImpl<>(carResponses,pageable,carResponses.size());
+        when(carService.getAllCars(null, null, null, null,pageable))
+                .thenReturn(carResponsePage);
         mockMvc.perform(get("/cars"))
                 .andExpect(status().isOk());
-        verify(carService).getAllCars(null, null, null, null);
+        verify(carService).getAllCars(null, null, null, null,pageable);
     }
 
     @Test
@@ -81,9 +86,13 @@ class CarControllerTest {
         String model = "Golf";
         CarCategory category = CarCategory.EURO6;
         UUID ownerId = UUID.randomUUID();
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("make").ascending()
+        );
+        Page<CarResponse> carResponsePage=new PageImpl<>(cars,pageable,cars.size());
 
-        when(carService.getAllCars(make, model, category, ownerId))
-                .thenReturn(cars);
+        when(carService.getAllCars(make, model, category, ownerId,pageable))
+                .thenReturn(carResponsePage);
 
         mockMvc.perform(get("/cars")
                         .param("make", make)
@@ -92,7 +101,7 @@ class CarControllerTest {
                         .param("ownerId", ownerId.toString()))
                 .andExpect(status().isOk());
 
-        verify(carService).getAllCars(make, model, category, ownerId);
+        verify(carService).getAllCars(make, model, category, ownerId,pageable);
     }
 
     @Test
@@ -114,7 +123,7 @@ class CarControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(carRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         verify(carService).createCar(any(CarRequest.class));
     }
 

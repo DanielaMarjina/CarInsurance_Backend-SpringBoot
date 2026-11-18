@@ -36,7 +36,7 @@ public class OwnerController {
             @ParameterObject @PageableDefault(
                     page = 0,
                     size = 10,
-                    sort = "name",
+                    sort = "lastName",
                     direction = Sort.Direction.ASC
             ) Pageable pageable
             ){

@@ -3,7 +3,6 @@ package com.danielamarjina.carinsurance.controller;
 import com.danielamarjina.carinsurance.dto.request.OwnerPatchRequest;
 import com.danielamarjina.carinsurance.dto.request.OwnerRequest;
 import com.danielamarjina.carinsurance.dto.response.OwnerResponse;
-import com.danielamarjina.carinsurance.entity.Owner;
 import com.danielamarjina.carinsurance.enums.DriverLicenseCategory;
 import com.danielamarjina.carinsurance.service.CustomUserDetailsService;
 import com.danielamarjina.carinsurance.service.JWTService;
@@ -11,6 +10,7 @@ import com.danielamarjina.carinsurance.service.OwnerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -59,38 +59,47 @@ class OwnerControllerTest {
     @Test
     @WithMockUser(roles = "EMPLOYEE")
     void getAllOwners_shouldReturnAllOwners() throws Exception {
-        List<Owner> owners = List.of(
-                new Owner(),
-                new Owner()
+        OwnerResponse response1 = new OwnerResponse();
+        OwnerResponse response2 = new OwnerResponse();
+        List<OwnerResponse> owners = List.of(response1, response2);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("lastName").ascending()
         );
-        when(ownerService.getAllOwners(null))
-                .thenReturn(owners);
+        Page<OwnerResponse> ownersPage = new PageImpl<>(owners, pageable, owners.size());
+
+        when(ownerService.getAllOwners(null, pageable))
+                .thenReturn(ownersPage);
         mockMvc.perform(get("/owners"))
                 .andExpect(status().isOk());
-        verify(ownerService).getAllOwners(null);
+        verify(ownerService).getAllOwners(null, pageable);
     }
 
     @Test
     @WithMockUser(roles = "EMPLOYEE")
     void getAllOwners_shouldFilterOwnersByCategory() throws Exception {
-        List<Owner> owners = List.of(
-                new Owner(),
-                new Owner()
-        );
         DriverLicenseCategory category = DriverLicenseCategory.A;
-        when(ownerService.getAllOwners(category))
-                .thenReturn(owners);
+        OwnerResponse response1 = new OwnerResponse();
+        OwnerResponse response2 = new OwnerResponse();
+        List<OwnerResponse> owners = List.of(response1, response2);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("lastName").ascending()
+        );
+        Page<OwnerResponse> ownersPage = new PageImpl<>(owners, pageable, owners.size());
+
+        when(ownerService.getAllOwners(category, pageable))
+                .thenReturn(ownersPage);
         mockMvc.perform(get("/owners")
                         .param("driverLicenseCategory", category.name()))
                 .andExpect(status().isOk());
-        verify(ownerService).getAllOwners(category);
+        verify(ownerService).getAllOwners(category,pageable);
     }
 
     @Test
     @WithMockUser(roles = "EMPLOYEE")
     void createOwner_shouldReturnNewOwner() throws Exception {
         OwnerRequest ownerRequest = new OwnerRequest();
-        ownerRequest.setName("John Doe");
+        ownerRequest.setFirstName("John");
+        ownerRequest.setLastName("Doe");
         ownerRequest.setBirthdate(LocalDate.of(1995, 5, 10));
         ownerRequest.setYearOfDriverLicense(2018);
         ownerRequest.setDriverLicenseCategory(DriverLicenseCategory.B);
@@ -102,7 +111,7 @@ class OwnerControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ownerRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         verify(ownerService).createOwner(any(OwnerRequest.class));
     }
 
@@ -110,7 +119,8 @@ class OwnerControllerTest {
     @WithMockUser(roles = "EMPLOYEE")
     void createOwner_shouldNotReturnNewOwner() throws Exception {
         OwnerRequest ownerRequest = new OwnerRequest();
-        ownerRequest.setName("John Doe");
+        ownerRequest.setFirstName("John");
+        ownerRequest.setLastName("Doe");
         ownerRequest.setBirthdate(LocalDate.of(2027, 5, 10));
         ownerRequest.setYearOfDriverLicense(2018);
         ownerRequest.setDriverLicenseCategory(DriverLicenseCategory.B);
@@ -154,7 +164,8 @@ class OwnerControllerTest {
         OwnerResponse ownerResponse = new OwnerResponse();
         UUID id = UUID.randomUUID();
         OwnerRequest ownerRequest = new OwnerRequest();
-        ownerRequest.setName("John Doe");
+        ownerRequest.setFirstName("John");
+        ownerRequest.setLastName("Doe");
         ownerRequest.setBirthdate(LocalDate.of(1995, 5, 10));
         ownerRequest.setYearOfDriverLicense(2018);
         ownerRequest.setDriverLicenseCategory(DriverLicenseCategory.B);

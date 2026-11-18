@@ -46,7 +46,7 @@ class AuthControllerTest {
         RegisterRequest registerRequest=new RegisterRequest();
         registerRequest.setUsername("john123");
         registerRequest.setEmail("john@test.com");
-        registerRequest.setPassword("password123");
+        registerRequest.setPassword("Password123!");
 
         mockMvc.perform(post("/auth/register")
                         .with(csrf())

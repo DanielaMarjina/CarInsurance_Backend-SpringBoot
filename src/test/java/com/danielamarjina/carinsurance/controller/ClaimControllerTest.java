@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -57,19 +58,21 @@ class ClaimControllerTest {
     @Test
     @WithMockUser(roles = "EMPLOYEE")
     void getAllClaims_shouldReturnAllClaims() throws Exception {
-
         List<ClaimResponse> claims = List.of(
                 new ClaimResponse(),
                 new ClaimResponse()
         );
-
-        when(claimService.getAllClaims())
-                .thenReturn(claims);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("claimDate").ascending()
+        );
+        Page<ClaimResponse> claimPage=new PageImpl<>(claims,pageable,claims.size());
+        when(claimService.getAllClaims(pageable))
+                .thenReturn(claimPage);
 
         mockMvc.perform(get("/claims"))
                 .andExpect(status().isOk());
 
-        verify(claimService).getAllClaims();
+        verify(claimService).getAllClaims(pageable);
     }
 
 
@@ -95,7 +98,7 @@ class ClaimControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(claimRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         verify(claimService).createClaim(
                 eq(carId),

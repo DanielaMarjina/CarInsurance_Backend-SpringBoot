@@ -28,7 +28,8 @@ public class OwnerIntegrationTest {
     @Test
     void createOwner_shouldSaveOwnerToDB(){
         OwnerRequest ownerRequest = OwnerRequest.builder()
-                .name("John Doe")
+                .firstName("John")
+                .lastName("Doe")
                 .birthdate(LocalDate.of(1995, 5, 10))
                 .yearOfDriverLicense(2015)
                 .driverLicenseCategory(DriverLicenseCategory.B)
@@ -43,14 +44,16 @@ public class OwnerIntegrationTest {
         Optional<Owner> savedOwner=ownerRepository.findById(ownerResponse.getId());
 
         assertTrue(savedOwner.isPresent());
-        assertEquals("John Doe", savedOwner.get().getName());
+        assertEquals("John", savedOwner.get().getFirstName());
+        assertEquals("Doe", savedOwner.get().getLastName());
 
     }
 
     @Test
     void findOwnerByEmail_shouldReturnSavedOwner() {
         Owner owner = Owner.builder()
-                .name("Maria Popescu")
+                .firstName("Maria")
+                .lastName("Popescu")
                 .birthdate(LocalDate.of(1995, 5, 10))
                 .yearOfDriverLicense(2015)
                 .driverLicenseCategory(DriverLicenseCategory.B)
@@ -63,7 +66,8 @@ public class OwnerIntegrationTest {
                 ownerService.findOwnerByEmail("maria.integration@test.com");
 
         assertNotNull(response);
-        assertEquals("Maria Popescu", response.getName());
+        assertEquals("Maria", response.getFirstName());
+        assertEquals("Popescu", response.getLastName());
         assertEquals("maria.integration@test.com", response.getEmail());
     }
 }

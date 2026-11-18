@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -64,10 +65,14 @@ class InsurancePolicyControllerTest {
                 new InsurancePolicyResponse(),
                 new InsurancePolicyResponse()
         );
-        when(insurancePolicyService.getAllPolicies(null,null))
-                .thenReturn(insurancePolicyList);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("status").ascending()
+        );
+        Page<InsurancePolicyResponse> policyResponsePage=new PageImpl<>(insurancePolicyList,pageable,insurancePolicyList.size());
+        when(insurancePolicyService.getAllPolicies(null,null,pageable))
+                .thenReturn(policyResponsePage);
         mockMvc.perform(get("/policies")).andExpect(status().isOk());
-        verify(insurancePolicyService).getAllPolicies(null,null);
+        verify(insurancePolicyService).getAllPolicies(null,null,pageable);
     }
 
     @Test
@@ -78,12 +83,16 @@ class InsurancePolicyControllerTest {
                 new InsurancePolicyResponse(),
                 new InsurancePolicyResponse()
         );
-        when(insurancePolicyService.getAllPolicies(provider,null))
-                .thenReturn(insurancePolicyList);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("status").ascending()
+        );
+        Page<InsurancePolicyResponse> policyResponsePage=new PageImpl<>(insurancePolicyList,pageable,insurancePolicyList.size());
+        when(insurancePolicyService.getAllPolicies(provider,null,pageable))
+                .thenReturn(policyResponsePage);
         mockMvc.perform(get("/policies")
                 .param("provider",provider))
                 .andExpect(status().isOk());
-        verify(insurancePolicyService).getAllPolicies(provider,null);
+        verify(insurancePolicyService).getAllPolicies(provider,null,pageable);
     }
 
     @Test
@@ -94,12 +103,16 @@ class InsurancePolicyControllerTest {
                 new InsurancePolicyResponse(),
                 new InsurancePolicyResponse()
         );
-        when(insurancePolicyService.getAllPolicies(null,status))
-                .thenReturn(insurancePolicyList);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("status").ascending()
+        );
+        Page<InsurancePolicyResponse> policyResponsePage=new PageImpl<>(insurancePolicyList,pageable,insurancePolicyList.size());
+        when(insurancePolicyService.getAllPolicies(null,status,pageable))
+                .thenReturn(policyResponsePage);
         mockMvc.perform(get("/policies")
                 .param("status",status.name()))
                 .andExpect(status().isOk());
-        verify(insurancePolicyService).getAllPolicies(null,status);
+        verify(insurancePolicyService).getAllPolicies(null,status,pageable);
     }
 
     @Test
@@ -119,7 +132,7 @@ class InsurancePolicyControllerTest {
                         .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(insurancePolicyRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         verify(insurancePolicyService).createPolicy(eq(carId),any(InsurancePolicyRequest.class));
     }
 
