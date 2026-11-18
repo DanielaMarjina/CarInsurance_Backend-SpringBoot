@@ -69,7 +69,7 @@ class ClaimServiceTest {
         assertEquals(2, result.getTotalElements());
         assertEquals(
                 List.of(claimResponse1, claimResponse2),
-                result
+                result.getContent()
         );
 
         verify(claimRepository).findAll(pageable);
