@@ -63,7 +63,7 @@ class OwnerControllerTest {
         OwnerResponse response2 = new OwnerResponse();
         List<OwnerResponse> owners = List.of(response1, response2);
         Pageable pageable = PageRequest.of(
-                0, 10, Sort.by("name").ascending()
+                0, 10, Sort.by("lastName").ascending()
         );
         Page<OwnerResponse> ownersPage = new PageImpl<>(owners, pageable, owners.size());
 
@@ -82,7 +82,7 @@ class OwnerControllerTest {
         OwnerResponse response2 = new OwnerResponse();
         List<OwnerResponse> owners = List.of(response1, response2);
         Pageable pageable = PageRequest.of(
-                0, 10, Sort.by("name").ascending()
+                0, 10, Sort.by("lastName").ascending()
         );
         Page<OwnerResponse> ownersPage = new PageImpl<>(owners, pageable, owners.size());
 
