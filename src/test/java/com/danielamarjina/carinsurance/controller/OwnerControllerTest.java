@@ -10,10 +10,7 @@ import com.danielamarjina.carinsurance.service.OwnerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -65,7 +62,9 @@ class OwnerControllerTest {
         OwnerResponse response1 = new OwnerResponse();
         OwnerResponse response2 = new OwnerResponse();
         List<OwnerResponse> owners = List.of(response1, response2);
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("name").ascending()
+        );
         Page<OwnerResponse> ownersPage = new PageImpl<>(owners, pageable, owners.size());
 
         when(ownerService.getAllOwners(null, pageable))
@@ -82,7 +81,9 @@ class OwnerControllerTest {
         OwnerResponse response1 = new OwnerResponse();
         OwnerResponse response2 = new OwnerResponse();
         List<OwnerResponse> owners = List.of(response1, response2);
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("name").ascending()
+        );
         Page<OwnerResponse> ownersPage = new PageImpl<>(owners, pageable, owners.size());
 
         when(ownerService.getAllOwners(category, pageable))
@@ -110,7 +111,7 @@ class OwnerControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ownerRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         verify(ownerService).createOwner(any(OwnerRequest.class));
     }
 
