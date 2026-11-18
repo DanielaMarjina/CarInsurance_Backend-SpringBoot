@@ -140,6 +140,10 @@ class OwnerServiceTest {
 
         when(ownerRepository.findByDriverLicenseCategory(category,pageable))
                 .thenReturn(ownersPage);
+        when(ownerMapper.toResponse(owners.get(0)))
+                .thenReturn(response1);
+        when(ownerMapper.toResponse(owners.get(1)))
+                .thenReturn(response2);
 
         Page<OwnerResponse> result=ownerService.getAllOwners(category,pageable);
 
