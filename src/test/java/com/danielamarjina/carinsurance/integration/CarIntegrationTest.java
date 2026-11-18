@@ -34,7 +34,8 @@ public class CarIntegrationTest {
     @Test
     void createCar_shouldSaveCarAndItsOwnerToDB(){
         Owner owner = Owner.builder()
-                .name("Maria Popescu")
+                .firstName("Maria")
+                .lastName("Popescu")
                 .birthdate(LocalDate.of(1995, 5, 10))
                 .yearOfDriverLicense(2015)
                 .driverLicenseCategory(DriverLicenseCategory.B)
