@@ -30,6 +30,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.mockito.ArgumentMatchers;
+
+import static org.mockito.ArgumentMatchers.eq;
+
 @ExtendWith(MockitoExtension.class)
 class CarServiceTest {
     @Mock
@@ -45,13 +49,13 @@ class CarServiceTest {
     private CarService carService;
 
     @Test
-    void createCar_shouldCreateCar_whenOwnerExists(){
-        CarRequest carRequest=new CarRequest();
-        UUID ownerId= UUID.randomUUID();
+    void createCar_shouldCreateCar_whenOwnerExists() {
+        CarRequest carRequest = new CarRequest();
+        UUID ownerId = UUID.randomUUID();
         carRequest.setOwnerId(ownerId);
-        Owner owner=new Owner();
-        Car car=new Car();
-        CarResponse carResponse=new CarResponse();
+        Owner owner = new Owner();
+        Car car = new Car();
+        CarResponse carResponse = new CarResponse();
 
         when(ownerRepository.findById(carRequest.getOwnerId()))
                 .thenReturn(Optional.of(owner));
@@ -61,8 +65,8 @@ class CarServiceTest {
                 .thenReturn(car);
         when(carMapper.toResponse(car))
                 .thenReturn(carResponse);
-        CarResponse result=carService.createCar(carRequest);
-        assertEquals(carResponse,result);
+        CarResponse result = carService.createCar(carRequest);
+        assertEquals(carResponse, result);
 
         verify(ownerRepository).findById(carRequest.getOwnerId());
         verify(carMapper).toEntity(carRequest);
@@ -71,46 +75,46 @@ class CarServiceTest {
     }
 
     @Test
-    void createCar_shouldThrowException_whenOwnerDoesNotExist(){
-        UUID ownerId=UUID.randomUUID();
-        CarRequest carRequest=new CarRequest();
+    void createCar_shouldThrowException_whenOwnerDoesNotExist() {
+        UUID ownerId = UUID.randomUUID();
+        CarRequest carRequest = new CarRequest();
         carRequest.setOwnerId(ownerId);
         when(ownerRepository.findById(ownerId))
                 .thenReturn(Optional.empty());
         assertThrows(OwnerNotFoundException.class,
-                ()->carService.createCar(carRequest));
+                () -> carService.createCar(carRequest));
         verify(ownerRepository).findById(ownerId);
     }
 
     @Test
-    void getCarById_shouldGetCar_whenCarExists(){
-        UUID id=UUID.randomUUID();
-        Car car=new Car();
-        CarResponse carResponse=new CarResponse();
+    void getCarById_shouldGetCar_whenCarExists() {
+        UUID id = UUID.randomUUID();
+        Car car = new Car();
+        CarResponse carResponse = new CarResponse();
         when(carRepository.findById(id))
                 .thenReturn(Optional.of(car));
         when(carMapper.toResponse(car))
                 .thenReturn(carResponse);
-        CarResponse result=carService.getCarById(id);
-        assertEquals(carResponse,result);
+        CarResponse result = carService.getCarById(id);
+        assertEquals(carResponse, result);
         verify(carRepository).findById(id);
         verify(carMapper).toResponse(car);
     }
 
     @Test
-    void getCarById_shouldThrowException_whenCarDoesNotExist(){
-        UUID id=UUID.randomUUID();
+    void getCarById_shouldThrowException_whenCarDoesNotExist() {
+        UUID id = UUID.randomUUID();
         when(carRepository.findById(id))
                 .thenReturn(Optional.empty());
         assertThrows(CarNotFoundException.class,
-                ()->carService.getCarById(id));
+                () -> carService.getCarById(id));
         verify(carRepository).findById(id);
     }
 
     @Test
-    void deleteCar_shouldDeleteCar_whenCarExists(){
+    void deleteCar_shouldDeleteCar_whenCarExists() {
         UUID id = UUID.randomUUID();
-        Car car=new Car();
+        Car car = new Car();
         when(carRepository.findById(id))
                 .thenReturn(Optional.of(car));
         carService.deleteCar(id);
@@ -121,187 +125,200 @@ class CarServiceTest {
     }
 
     @Test
-    void deleteCar_shouldThrowException_whenCarDoesNotExist(){
+    void deleteCar_shouldThrowException_whenCarDoesNotExist() {
         UUID id = UUID.randomUUID();
         when(carRepository.findById(id))
                 .thenReturn(Optional.empty());
         assertThrows(CarNotFoundException.class,
-                ()->carService.deleteCar(id));
+                () -> carService.deleteCar(id));
         verify(carRepository).findById(id);
     }
 
     @Test
-    void getAllCars_shouldReturnAllCars_whenNoFiltersAreProvided(){
-        Car car1=new Car();
-        Car car2=new Car();
-        List<Car> cars= List.of(
+    void getAllCars_shouldReturnAllCars_whenNoFiltersAreProvided() {
+        Car car1 = new Car();
+        Car car2 = new Car();
+        List<Car> cars = List.of(
                 car1,
                 car2
         );
-        CarResponse carResponse1=new CarResponse();
-        CarResponse carResponse2=new CarResponse();
-        Pageable pageable= PageRequest.of(0,10);
-        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
+        CarResponse carResponse1 = new CarResponse();
+        CarResponse carResponse2 = new CarResponse();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Car> carPage = new PageImpl<>(cars, pageable, cars.size());
 
-        when(carRepository.findAll(any(Specification.class),pageable))
-                .thenReturn(carPage);
+        when(carRepository.findAll(
+                ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable)
+        )).thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        Page<CarResponse> result=carService.getAllCars(null,null,null,null,pageable);
-        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
+        Page<CarResponse> result = carService.getAllCars(null, null, null, null, pageable);
+        assertEquals(List.of(carResponse1, carResponse2), result.getContent());
         assertEquals(2, result.getTotalElements());
-        verify(carRepository).findAll(any(Specification.class),pageable);
+        verify(carRepository).findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable));
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
 
     @Test
-    void getAllCars_shouldReturnCarsFilteredByMake_whenMakeIsProvided(){
-        String make="BMW";
-        Car car1=new Car();
-        Car car2=new Car();
-        List<Car> cars= List.of(
+    void getAllCars_shouldReturnCarsFilteredByMake_whenMakeIsProvided() {
+        String make = "BMW";
+        Car car1 = new Car();
+        Car car2 = new Car();
+        List<Car> cars = List.of(
                 car1,
                 car2
         );
-        CarResponse carResponse1=new CarResponse();
-        CarResponse carResponse2=new CarResponse();
-        Pageable pageable= PageRequest.of(0,10);
-        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
+        CarResponse carResponse1 = new CarResponse();
+        CarResponse carResponse2 = new CarResponse();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Car> carPage = new PageImpl<>(cars, pageable, cars.size());
 
-        when(carRepository.findAll(any(Specification.class),pageable))
+        when(carRepository.findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable)))
                 .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        Page<CarResponse> result=carService.getAllCars(make,null,null,null,pageable);
-        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
-        assertEquals(2,result.getTotalElements());
-        verify(carRepository).findAll(any(Specification.class),pageable);
+        Page<CarResponse> result = carService.getAllCars(make, null, null, null, pageable);
+        assertEquals(List.of(carResponse1, carResponse2), result.getContent());
+        assertEquals(2, result.getTotalElements());
+        verify(carRepository).findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable));
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
 
     @Test
-    void getAllCars_shouldReturnCarsFilteredByModel_whenModelIsProvided(){
-        String model="X5";
-        Car car1=new Car();
-        Car car2=new Car();
-        List<Car> cars= List.of(
+    void getAllCars_shouldReturnCarsFilteredByModel_whenModelIsProvided() {
+        String model = "X5";
+        Car car1 = new Car();
+        Car car2 = new Car();
+        List<Car> cars = List.of(
                 car1,
                 car2
         );
-        CarResponse carResponse1=new CarResponse();
-        CarResponse carResponse2=new CarResponse();
-        Pageable pageable= PageRequest.of(0,10);
-        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
+        CarResponse carResponse1 = new CarResponse();
+        CarResponse carResponse2 = new CarResponse();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Car> carPage = new PageImpl<>(cars, pageable, cars.size());
 
-        when(carRepository.findAll(any(Specification.class),pageable))
+        when(carRepository.findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable)))
                 .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        Page<CarResponse> result=carService.getAllCars(null,model,null,null,pageable);
-        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
-        assertEquals(2,result.getTotalElements());
-        verify(carRepository).findAll(any(Specification.class),pageable);
+        Page<CarResponse> result = carService.getAllCars(null, model, null, null, pageable);
+        assertEquals(List.of(carResponse1, carResponse2), result.getContent());
+        assertEquals(2, result.getTotalElements());
+        verify(carRepository).findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable));
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
 
     @Test
-    void getAllCars_shouldReturnCarsFilteredByCategory_whenCategoryIsProvided(){
-        CarCategory category=CarCategory.ELECTRIC;
-        Car car1=new Car();
-        Car car2=new Car();
-        List<Car> cars= List.of(
+    void getAllCars_shouldReturnCarsFilteredByCategory_whenCategoryIsProvided() {
+        CarCategory category = CarCategory.ELECTRIC;
+        Car car1 = new Car();
+        Car car2 = new Car();
+        List<Car> cars = List.of(
                 car1,
                 car2
         );
-        CarResponse carResponse1=new CarResponse();
-        CarResponse carResponse2=new CarResponse();
-        Pageable pageable= PageRequest.of(0,10);
-        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
+        CarResponse carResponse1 = new CarResponse();
+        CarResponse carResponse2 = new CarResponse();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Car> carPage = new PageImpl<>(cars, pageable, cars.size());
 
-        when(carRepository.findAll(any(Specification.class),pageable))
+        when(carRepository.findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable)))
                 .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        Page<CarResponse> result=carService.getAllCars(null,null,category,null,pageable);
-        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
-        assertEquals(2,result.getTotalElements());
-        verify(carRepository).findAll(any(Specification.class),pageable);
+        Page<CarResponse> result = carService.getAllCars(null, null, category, null, pageable);
+        assertEquals(List.of(carResponse1, carResponse2), result.getContent());
+        assertEquals(2, result.getTotalElements());
+        verify(carRepository).findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable));
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
 
     @Test
-    void getAllCars_shouldReturnCarsFilteredByOwnerId_whenOwnerIdIsProvided(){
-        UUID ownerId=UUID.randomUUID();
-        Car car1=new Car();
-        Car car2=new Car();
-        List<Car> cars= List.of(
+    void getAllCars_shouldReturnCarsFilteredByOwnerId_whenOwnerIdIsProvided() {
+        UUID ownerId = UUID.randomUUID();
+        Car car1 = new Car();
+        Car car2 = new Car();
+        List<Car> cars = List.of(
                 car1,
                 car2
         );
-        CarResponse carResponse1=new CarResponse();
-        CarResponse carResponse2=new CarResponse();
-        Pageable pageable= PageRequest.of(0,10);
-        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
+        CarResponse carResponse1 = new CarResponse();
+        CarResponse carResponse2 = new CarResponse();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Car> carPage = new PageImpl<>(cars, pageable, cars.size());
 
-        when(carRepository.findAll(any(Specification.class),pageable))
+        when(carRepository.findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable)))
                 .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        Page<CarResponse> result=carService.getAllCars(null,null,null,ownerId,pageable);
-        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
-        assertEquals(2,result.getTotalElements());
-        verify(carRepository).findAll(any(Specification.class),pageable);
+        Page<CarResponse> result = carService.getAllCars(null, null, null, ownerId, pageable);
+        assertEquals(List.of(carResponse1, carResponse2), result.getContent());
+        assertEquals(2, result.getTotalElements());
+        verify(carRepository).findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable));
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
 
     @Test
-    void getAllCars_shouldReturnCarsFilteredByAllParameters_whenAllParametersAreProvided(){
-        String make="BMW";
-        String model="X5";
-        CarCategory category=CarCategory.ELECTRIC;
-        UUID ownerId=UUID.randomUUID();
-        Car car1=new Car();
-        Car car2=new Car();
-        List<Car> cars= List.of(
+    void getAllCars_shouldReturnCarsFilteredByAllParameters_whenAllParametersAreProvided() {
+        String make = "BMW";
+        String model = "X5";
+        CarCategory category = CarCategory.ELECTRIC;
+        UUID ownerId = UUID.randomUUID();
+        Car car1 = new Car();
+        Car car2 = new Car();
+        List<Car> cars = List.of(
                 car1,
                 car2
         );
-        CarResponse carResponse1=new CarResponse();
-        CarResponse carResponse2=new CarResponse();
-        Pageable pageable= PageRequest.of(0,10);
-        Page<Car> carPage=new PageImpl<>(cars,pageable,cars.size());
+        CarResponse carResponse1 = new CarResponse();
+        CarResponse carResponse2 = new CarResponse();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Car> carPage = new PageImpl<>(cars, pageable, cars.size());
 
-        when(carRepository.findAll(any(Specification.class),pageable))
+        when(carRepository.findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable)))
                 .thenReturn(carPage);
         when(carMapper.toResponse(car1))
                 .thenReturn(carResponse1);
         when(carMapper.toResponse(car2))
                 .thenReturn(carResponse2);
 
-        Page<CarResponse> result=carService.getAllCars(make,model,category,ownerId,pageable);
-        assertEquals(List.of(carResponse1,carResponse2),result.getContent());
-        assertEquals(2,result.getTotalElements());
-        verify(carRepository).findAll(any(Specification.class),pageable);
+        Page<CarResponse> result = carService.getAllCars(make, model, category, ownerId, pageable);
+        assertEquals(List.of(carResponse1, carResponse2), result.getContent());
+        assertEquals(2, result.getTotalElements());
+        verify(carRepository).findAll(ArgumentMatchers.<Specification<Car>>any(),
+                eq(pageable));
         verify(carMapper).toResponse(car1);
         verify(carMapper).toResponse(car2);
     }
