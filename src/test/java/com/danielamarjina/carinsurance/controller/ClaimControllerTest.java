@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -65,7 +62,9 @@ class ClaimControllerTest {
                 new ClaimResponse(),
                 new ClaimResponse()
         );
-        Pageable pageable= PageRequest.of(0,10);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("claimDate").ascending()
+        );
         Page<ClaimResponse> claimPage=new PageImpl<>(claims,pageable,claims.size());
         when(claimService.getAllClaims(pageable))
                 .thenReturn(claimPage);
@@ -99,7 +98,7 @@ class ClaimControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(claimRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         verify(claimService).createClaim(
                 eq(carId),

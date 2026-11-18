@@ -12,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -68,7 +65,9 @@ class InsurancePolicyControllerTest {
                 new InsurancePolicyResponse(),
                 new InsurancePolicyResponse()
         );
-        Pageable pageable= PageRequest.of(0,10);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("status").ascending()
+        );
         Page<InsurancePolicyResponse> policyResponsePage=new PageImpl<>(insurancePolicyList,pageable,insurancePolicyList.size());
         when(insurancePolicyService.getAllPolicies(null,null,pageable))
                 .thenReturn(policyResponsePage);
@@ -84,7 +83,9 @@ class InsurancePolicyControllerTest {
                 new InsurancePolicyResponse(),
                 new InsurancePolicyResponse()
         );
-        Pageable pageable= PageRequest.of(0,10);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("status").ascending()
+        );
         Page<InsurancePolicyResponse> policyResponsePage=new PageImpl<>(insurancePolicyList,pageable,insurancePolicyList.size());
         when(insurancePolicyService.getAllPolicies(provider,null,pageable))
                 .thenReturn(policyResponsePage);
@@ -102,7 +103,9 @@ class InsurancePolicyControllerTest {
                 new InsurancePolicyResponse(),
                 new InsurancePolicyResponse()
         );
-        Pageable pageable= PageRequest.of(0,10);
+        Pageable pageable = PageRequest.of(
+                0, 10, Sort.by("status").ascending()
+        );
         Page<InsurancePolicyResponse> policyResponsePage=new PageImpl<>(insurancePolicyList,pageable,insurancePolicyList.size());
         when(insurancePolicyService.getAllPolicies(null,status,pageable))
                 .thenReturn(policyResponsePage);
@@ -129,7 +132,7 @@ class InsurancePolicyControllerTest {
                         .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(insurancePolicyRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         verify(insurancePolicyService).createPolicy(eq(carId),any(InsurancePolicyRequest.class));
     }
 
